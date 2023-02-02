@@ -1,6 +1,6 @@
 .header {
   &__container {
-    background-image: url('./src/images/header/background-image2.jpeg');
+    background-image: url('../images/header/background-image2.jpeg');
     height: 230px;
     background-repeat: no-repeat;
     background-position: center;
@@ -131,4 +131,10 @@
   font-weight: 400;
   font-size: 14px;
   line-height: 16px;
+}
+
+.form-field {
+  width: 100%;
+  color: #FFFFFF;
+  font-family: 'Roboto';
 }
