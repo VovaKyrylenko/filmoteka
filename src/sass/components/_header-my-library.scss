@@ -1,3 +1,16 @@
+
+
+.library__back{
+  background-image: url('../images/header/header-my-d.jpeg');
+    @include mobile() {
+        background-image: url('../images/header/header-m-m.jpeg');
+      }
+
+            @include tablet() {
+              background-image: url('../images/header/header-my-t.jpeg');
+            }
+}
+
 .buttons {
   justify-content: center;
   box-sizing: border-box;
