@@ -1,2 +1,4 @@
-@import './common';
-@import './example';
+@import './base/reset';
+@import './base/normalise';
+@import './base/base-style';
+@import './utils/mixins';
