@@ -20,3 +20,8 @@ async function fetchPopularMovies(){
 }
 
 
+async function fetchById(id){
+    const resp = await axios.get(`https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}`)
+    return resp.data;
+ }
+
