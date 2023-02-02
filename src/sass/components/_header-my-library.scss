@@ -1,0 +1,47 @@
+.buttons {
+  justify-content: center;
+  box-sizing: border-box;
+  width: auto;
+  padding-top: 66px;
+  display: flex;
+
+  &__list {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  &__style {
+    border: 1px solid rgba(255, 255, 255, 1);
+    border-radius: 5px;
+    font: inherit;
+    color: inherit;
+    background-color: transparent;
+    height: 44px;
+    width: 148px;
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 16px;
+    color: #FFFFFF;
+    cursor: pointer;
+
+    @include mobile() {
+      width: 130px;
+
+    }
+
+    @include tablet() {
+      width: 152px;
+
+    }
+  }
+
+  &__style:focus {
+    background: #FF6B01;
+    box-shadow: 0px 8px 43px rgba(255, 107, 1, 0.6);
+    border: none;
+  }
+
+}
