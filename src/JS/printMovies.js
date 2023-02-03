@@ -40,18 +40,23 @@ async function printMovies(movies, movieListEl) {
     movieListEl.innerHTML = movies.map((movie) => {
         // створення списку жанрів
         const genresList = [];
-        movie.genre_ids.forEach(el => {
+        movie.genre_ids.length
+        ? movie.genre_ids.forEach(el => {
             elem = genresInfo.genres.find(opt => opt.id === el).name;
             genresList.push(elem);
-        });
+        })
+        : genresList.push('Another genre');
         genres = genresList.join(', ');
 
         // створення url постерів
-        const imgUrl = `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
+        const imgUrl = movie.poster_path 
+        ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+        : 'https://image.tmdb.org/t/p/w500<<undefined img>>'
 
         // виділення року із дати
-        const date1 = new Date(movie.release_date);
-        let date = date1.getFullYear();
+        const date = movie.release_date 
+        ? new Date(movie.release_date).getFullYear()
+        : "-";
 
         // розмітка картки
         return `
