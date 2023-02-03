@@ -18,9 +18,10 @@ export default class filmAPI {
   // запрос фильмов по ключевому слову
   async fetchKeyword(keyword) {
     const resp = await axios.get(
-      `${BASE_URL}/search/keyword?api_key=${API_KEY}&query=${keyword}&page=${this.page}`
+      `${BASE_URL}/search/movie?api_key=${API_KEY}&language=en-US&query=${keyword}&page=${this.page}&include_adult=false`
     );
-    return [resp.data.results, resp.data.total_pages];
+    console.log(resp.data.results);
+    return resp.data.results;
   }
   // запрос фильма по ID
   async fetchById(id) {
