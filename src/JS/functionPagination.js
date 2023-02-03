@@ -53,7 +53,6 @@ export function pagination(activePage, totalPages) {
     return el;
   });
 
-  console.log(result);
   return result;
 }
 
