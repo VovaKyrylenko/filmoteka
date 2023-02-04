@@ -32,7 +32,6 @@ class FILMAPI {
 
   async fetchKeyword() {
     if (!this.searchQuery) return;
-
     try {
       const resp = await axios.get(
         `${this.#BASE_URL}/search/movie?api_key=${this.#API_KEY}&query=${
