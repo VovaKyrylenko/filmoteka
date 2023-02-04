@@ -1,7 +1,7 @@
 import axios from 'axios';
 import Notiflix from 'notiflix';
 
-export class FilmAPI {
+class FILMAPI {
   #API_KEY;
   #BASE_URL;
 
@@ -108,3 +108,5 @@ export class FilmAPI {
     return this.searchQuery;
   }
 }
+
+export const FilmAPI = new FILMAPI();
