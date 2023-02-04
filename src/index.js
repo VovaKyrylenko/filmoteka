@@ -1,8 +1,8 @@
 import { renderFilms } from './JS/renderFunctions';
-import { FilmAPI } from './JS/service';
+import { API } from './JS/service';
 
-const list = document.querySelector('.js-films-list');
-const api = new FilmAPI();
-const popularFilmsList = api.fetchPopularMovies();
-console.log('popularFilmsList:', popularFilmsList);
-renderFilms(popularFilmsList[0], list);
+(async () => {
+  const list = document.querySelector('.js-films-list');
+  const popularFilmsList = await API.fetchPopularMovies();
+  await renderFilms(popularFilmsList, list);
+})();

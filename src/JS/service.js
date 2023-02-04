@@ -108,3 +108,5 @@ export class FilmAPI {
     return this.searchQuery;
   }
 }
+
+export const API = new FilmAPI();
