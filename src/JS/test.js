@@ -4,8 +4,6 @@ import { renderFilms, pagination, renderPagination } from './renderFunctions';
 
 async function test() {
   console.log('XXX');
-
-  const api = new FilmAPI();
   api.setSearchQuery('red');
   api.incrementPage();
   const data = await api.fetchKeyword();
