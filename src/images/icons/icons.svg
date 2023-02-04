@@ -9,14 +9,23 @@
     <symbol id="search" viewBox="0 0 32 32">
       <path stroke-linejoin="round" stroke-linecap="round" stroke-width="2.667" d="M14.667 25.333c5.891 0 10.667-4.776 10.667-10.667S20.558 3.999 14.667 3.999 4 8.775 4 14.666s4.776 10.667 10.667 10.667zM28 28.001l-5.8-5.8"/>
     </symbol>
-    <symbol id="arrow-left" viewBox="0 0 32 32" fill="none">
-      <path stroke-linejoin="round" stroke-linecap="round" stroke-width="2.667" d="M25.333 16H6.666M16 25.333 6.667 16 16 6.667"/>
-    </symbol>
-    <symbol id="arrow-right" viewBox="0 0 32 32" fill="none">
-      <path stroke-linejoin="round" stroke-linecap="round" stroke-width="2.667" d="M6.667 16h18.667M16 25.333 25.333 16 16 6.667"/>
-    </symbol>
     <symbol id="points" viewBox="0 0 107 32">
       <path d="M17.25 5.333c2.833 0 5.021.813 6.562 2.438 1.542 1.583 2.313 3.583 2.313 6 0 2.375-.771 4.354-2.313 5.938-1.542 1.542-3.729 2.312-6.562 2.312-2.708 0-4.854-.771-6.438-2.312s-2.375-3.521-2.375-5.938.771-4.417 2.312-6c1.542-1.625 3.708-2.438 6.5-2.438zm35.75 0c2.833 0 5.021.813 6.562 2.438 1.542 1.583 2.313 3.583 2.313 6 0 2.375-.771 4.354-2.313 5.938-1.542 1.542-3.729 2.312-6.562 2.312-2.708 0-4.854-.771-6.438-2.312s-2.375-3.521-2.375-5.938.771-4.417 2.313-6c1.542-1.625 3.708-2.438 6.5-2.438zm35.75 0c2.833 0 5.021.813 6.563 2.438 1.542 1.583 2.312 3.583 2.312 6 0 2.375-.771 4.354-2.312 5.938-1.542 1.542-3.729 2.312-6.563 2.312-2.708 0-4.854-.771-6.437-2.312s-2.375-3.521-2.375-5.938.771-4.417 2.313-6c1.542-1.625 3.708-2.438 6.5-2.438z"/>
     </symbol>
+      <style>
+      .img {
+        display: none;
+      }
+      .img:target {
+        display: inline;
+      }
+    </style>
+      <g id="arrow-left" class="img" fill="none" viewBox="0 0 16 16">
+  <path stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.333" d="M12.667 8H3.333M8 12.667 3.333 8 8 3.333"/>
+      </g>
+    <g id="arrow-right" class="img" fill="none" viewBox="0 0 16 16">
+      <path stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.333" d="M3.333 8h9.334M8 12.667 12.667 8 8 3.333"/>
+    </g>
   </defs>
 </svg>
+
