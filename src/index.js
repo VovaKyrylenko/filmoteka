@@ -4,5 +4,5 @@ import { API } from './JS/service';
 (async () => {
   const list = document.querySelector('.js-films-list');
   const popularFilmsList = await API.fetchPopularMovies();
-  await renderFilms(popularFilmsList, list);
+  renderFilms(popularFilmsList, list);
 })();
