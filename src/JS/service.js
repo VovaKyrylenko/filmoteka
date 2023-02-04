@@ -103,4 +103,8 @@ export class FilmAPI {
   getMax() {
     return this.max;
   }
+
+  getSearchQuery() {
+    return this.searchQuery;
+  }
 }
