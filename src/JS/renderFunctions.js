@@ -5,10 +5,17 @@ export function renderFilms(movies, movieListEl) {
 
   movieListEl.innerHTML = movies
     .map(movie => {
+      genresIds = movie.genre_ids;
       // створення списку жанрів
+      console.log('genresIds.length < 3:', genresIds.length < 3);
       const genresList = [];
-      movie.genre_ids.length
-        ? movie.genre_ids.forEach(el => {
+      if (genresIds.length > 3) {
+        genresIds = genresIds.slice(0, 2);
+        genresIds.push(9999);
+        console.log('genresIds:', genresIds);
+      }
+      genresIds.length
+        ? genresIds.forEach(el => {
             elem = genresInfo.genres.find(opt => opt.id === el).name;
             genresList.push(elem);
           })
