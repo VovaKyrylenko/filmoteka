@@ -1,6 +1,7 @@
 import * as basicLightbox from 'basiclightbox';
 import { API } from './service';
 import { filmBoxRef } from './helpers';
+import '../../node_modules/basiclightbox/dist/basicLightbox.min.css';
 
 filmBoxRef.addEventListener('click', onContainerClick);
 
@@ -35,11 +36,15 @@ function createModal(callback) {
 
       modalCloseByBackdropClick();
 
+      document.body.style.overflow = 'hidden';
+
       filmBoxRef.addEventListener('click', onContainerClick);
     },
-    
+
     onClose: () => {
       filmBoxRef.addEventListener('click', onContainerClick);
+
+      document.body.style.overflow = 'visible';
     },
   });
 
