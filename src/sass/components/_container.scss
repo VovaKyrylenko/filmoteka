@@ -1,142 +1,44 @@
 .films__list {
-    display: flex;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+
+
+  @media screen and (min-width: 768px) {
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 32px;
 
+  }
 
-    @media screen and (min-width: 768px) {
-        flex-wrap: wrap;
-        gap: 32px;
-        
-    }
-
-    @media screen and (min-width: 1048px) {
-        gap: 16px;
-    }
+  @media screen and (min-width: 1048px) {
+    gap: 16px;
+  }
 }
 
 .filmoteka {
-    padding: 20px 0;
-    @media screen and (min-width: 768px) {
-        padding: 60px 0;
-    }
+  padding: 20px 0;
+
+  @media screen and (min-width: 768px) {
+    padding: 60px 0;
+  }
 }
 
 .content {
-    margin-left: auto;
-    margin-right: auto;
+  margin-left: auto;
+  margin-right: auto;
 
 }
 
 .hidden {
-        width: 1px;
-        height: 1px;
-        white-space: nowrap;
-        clip-path: inset(100%);
-        clip: rect(0 0 0 0);
-        border: 0;
-        margin: -1px;
-        padding: 0;
-        position: absolute;
-        overflow: hidden;
+  width: 1px;
+  height: 1px;
+  white-space: nowrap;
+  clip-path: inset(100%);
+  clip: rect(0 0 0 0);
+  border: 0;
+  margin: -1px;
+  padding: 0;
+  position: absolute;
+  overflow: hidden;
 }
-
-// del
-
-.movie_card_img {
-    margin-bottom: 10px;
-    max-width: 280px;
-    display: block;
-  }
-  
-  @media (min-width: 767px) {
-    .movie_card_img {
-      margin-bottom: 8px;
-      max-width: 336px;
-    }
-  }
-  @media (min-width: 1280px) {
-    .movie_card_img {
-      margin-bottom: 12px;
-      max-width: 395px;
-    }
-  }
-  
-  .movie_card_desc {
-    display: flex;
-   
-    justify-content: flex-start;
-    align-items: center;
-  }
-  
-  .movie_card_title {
-    font-family: Roboto;
-    font-weight: 500;
-    font-size: 12px;
-    line-height: calc(16 / 12);
-    color: #000000;
-    text-transform: uppercase;
-  }
-  
-  @media (min-width: 1280px) {
-    .movie_card_title {
-      font-size: 20px;
-      line-height: calc(24 / 20);
-    }
-  }
-  
-  .movie_card_ganres {
-    font-family: Roboto;
-    font-size: 12px;
-    line-height: calc(16 / 12);
-    color: #ff6b08;
-    margin-right: 10px;
-    position: relative;
-  }
-  
-  @media (min-width: 1280px) {
-    .movie_card_ganres {
-      font-size: 20px;
-      line-height: calc(24 / 20);
-    }
-  }
-  
-  .movie_card_ganres::after {
-    content: '';
-    display: inline-block;
-    position: absolute;
-    background-color: #ff6b08;
-    width: 1px;
-    height: 10px;
-  
-    right: -5px;
-    bottom: 2px;
-  }
-  
-  .movie_card_year {
-    font-family: Roboto;
-    font-size: 12px;
-    line-height: calc(14 / 12);
-    color: #ff6b08;
-    margin-right: 9px;
-  }
-  
-  @media (min-width: 767px) {
-    .movie_card_year {
-      margin-right: 8px;
-    }
-  }
-  
-  .movie_card_rating {
-    color: #ffff;
-    background-color: #ff6b08;
-    font-family: 'Roboto';
-  
-    font-weight: 500;
-    font-size: 12px;
-    line-height: calc(14 / 12);
-    padding: 1px 6px;
-    text-transform: uppercase;
-    border-radius: 5px;
-  }

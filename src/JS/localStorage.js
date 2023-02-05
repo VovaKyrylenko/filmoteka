@@ -57,6 +57,18 @@ class FilmsLocalStorage {
     return filmsArr.slice(from, to);
   }
 
+  checkWatched(id) {
+    const filmsJSON = localStorage.getItem(this.#WATCH_KEY);
+    const filmsArr = JSON.parse(filmsJSON);
+    return filmsArr.some(film => film.id == id);
+  }
+
+  checkQueue(id) {
+    const filmsJSON = localStorage.getItem(this.#QUEUE_KEY);
+    const filmsArr = JSON.parse(filmsJSON);
+    return filmsArr.some(film => film.id == id);
+  }
+
   addFilmToWatch(film) {
     const filmsJSON = localStorage.getItem(this.#WATCH_KEY);
     const filmsArr = JSON.parse(filmsJSON);

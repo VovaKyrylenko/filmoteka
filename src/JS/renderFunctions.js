@@ -1,4 +1,6 @@
 import { genreInfo } from './helpers';
+import { filmBoxRef } from './helpers';
+import { API } from './service';
 
 export function renderFilms(movies, movieListEl) {
   const genresInfo = JSON.parse(genreInfo);
@@ -7,12 +9,10 @@ export function renderFilms(movies, movieListEl) {
     .map(movie => {
       genresIds = movie.genre_ids;
       // створення списку жанрів
-      console.log('genresIds.length < 3:', genresIds.length < 3);
       const genresList = [];
       if (genresIds.length > 3) {
         genresIds = genresIds.slice(0, 2);
         genresIds.push(9999);
-        console.log('genresIds:', genresIds);
       }
       genresIds.length
         ? genresIds.forEach(el => {
@@ -39,7 +39,7 @@ export function renderFilms(movies, movieListEl) {
                     <p class="movie_card_title">${movie.original_title}</p>
                     <div class="movie_card_desc">
                         <p class="movie_card_ganres">${genres}</p>
-                        <p class="movie_card_year">${date} year</p>
+                        <p class="movie_card_year">| ${date}</p>
                         <span class="movie_card_rating">${movie.vote_average}</span>
                         </div>
                 </li>`;
@@ -107,38 +107,34 @@ export function pagination(activePage, totalPages) {
 
 export function renderPagination(paginationArr, filmBoxRef) {
   const paginationUl = `<ul class="pagination"></ul>`;
-  filmBoxRef.insertAdjacentHTML('beforeend', paginationUl);
-  const paginationUlRef = document.querySelector('.pagination');
+  let paginationUlRef = document.querySelector('.pagination');
+  if (paginationUlRef) {
+    paginationUlRef.remove();
+  }
+
+  filmBoxRef.insertAdjacentHTML('afterend', paginationUl);
+  paginationUlRef = document.querySelector('.pagination');
 
   const leftArrowMarkup = `
-    <li class="pagination__item">
-    <a href="" class="pagination__link">
-    <svg class="pagination__icon" width="16" height="16">
-        <use href="./images/icons/icons.svg#arrow-left"></use>
-    </svg>
-    </a>
+    <li class="pagination__item item-left-arrow">
+      <a href="" class="pagination__left-arrow pagination__link">
+      </a>
+    </li>
+  `;
+  const rightArrowMarkup = `
+    <li class="pagination__right-arrow pagination__item item-right-arrow"">
+      <a href="" class="pagination__right-arrow pagination__link" data="rightArrow">
+      </a>
     </li>
   `;
 
-  const rightArrowMarkup = `
-        <li class="pagination__item">
-        <a href="" class="pagination__link">
-        <svg class="pagination__icon" width="16" height="16">
-            <use href="./images/icons/icons.svg#arrow-left"></use>
-        </svg>
-        </a>
-        </li>
-    `;
-
-  //масив чисел
   const numbersArr = paginationArr
-    .filter(el => Number(el) === Number(el))
-    .map(el => Number(el));
-  const number1 = Math.min(...numbersArr);
-  const number20 = Math.max(...numbersArr);
+    .filter(el => Number.parseInt(el) === Number.parseInt(el))
+    .map(el => Number.parseInt(el));
+  const firstNumber = Math.min(...numbersArr);
+  const lastNumber = Math.max(...numbersArr);
 
-  //рендер розмітки
-  const markup = paginationArr.map(page => {
+  paginationArr.forEach(page => {
     if (page === '<-') {
       paginationUlRef.insertAdjacentHTML('beforeend', leftArrowMarkup);
     } else if (page === '->') {
@@ -151,11 +147,15 @@ export function renderPagination(paginationArr, filmBoxRef) {
         <a href="" class="pagination__link">${updatedPageName}</a>
         </li>`
       );
-    } else if (
-      Number(page) === number1 ||
-      Number(page) === number20 ||
-      page === '...'
-    ) {
+    } else if (page === '...') {
+      paginationUlRef.insertAdjacentHTML(
+        'beforeend',
+        `<li class="pagination__item pagination__item--desktop pagination__item--dots">
+            <a href="" class="pagination__link">${page}</a>
+          </li>
+        `
+      );
+    } else if (Number(page) === firstNumber || Number(page) === lastNumber) {
       paginationUlRef.insertAdjacentHTML(
         'beforeend',
         `<li class="pagination__item pagination__item--desktop">
@@ -170,4 +170,42 @@ export function renderPagination(paginationArr, filmBoxRef) {
       );
     }
   });
+
+  paginationUlRef.addEventListener('click', listClickHandler);
+}
+
+function listClickHandler(event) {
+  event.preventDefault();
+  const element = event.target;
+  const pageValue = event.target.textContent;
+  const trimedValue = pageValue.trim();
+
+  const searchQueryCheck = async () => {
+    let films;
+    if (!API.getSearchQuery()) films = await API.fetchPopularMovies();
+    else films = await API.fetchKeyword();
+    renderFilms(films, filmBoxRef);
+  };
+
+  if (element.classList[0] === 'pagination') {
+    return;
+  }
+
+  filmBoxRef.innerHTML = '';
+
+  if (trimedValue === pageValue) {
+    if (Number(pageValue) < API.getMax() + 1) {
+      API.setPage(Number(pageValue));
+      searchQueryCheck();
+    }
+  } else if (element.classList[0] === 'pagination__right-arrow') {
+    API.incrementPage();
+    searchQueryCheck();
+  } else {
+    API.decrementPage();
+    searchQueryCheck();
+  }
+
+  const paginationArr = pagination(API.getPage(), API.getMax());
+  renderPagination(paginationArr, filmBoxRef);
 }
