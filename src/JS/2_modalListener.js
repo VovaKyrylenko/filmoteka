@@ -20,15 +20,16 @@ async function onContainerClick(evt) {
   const movie = await API.fetchById(filmId);
 
   // // Створюємо і показуємо модалку
-  createModal(renderModalMarcup(movie)).show();
+  const instance = createModal(renderModalMarcup(movie));
+  instance.show();
 
   // Знімаємо слухач
   filmBoxRef.removeEventListener('click', onContainerClick);
 }
 
 // Створення модалки
-function createModal(callback) {
-  const modal = basicLightbox.create(callback, {
+function createModal(markup) {
+  const modal = basicLightbox.create(markup, {
     onShow: modal => {
       modal.element().querySelector('.button-modal').onclick = modal.close;
 
