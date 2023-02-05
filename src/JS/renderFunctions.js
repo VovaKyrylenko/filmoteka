@@ -7,12 +7,10 @@ export function renderFilms(movies, movieListEl) {
     .map(movie => {
       genresIds = movie.genre_ids;
       // створення списку жанрів
-      console.log('genresIds.length < 3:', genresIds.length < 3);
       const genresList = [];
       if (genresIds.length > 3) {
         genresIds = genresIds.slice(0, 2);
         genresIds.push(9999);
-        console.log('genresIds:', genresIds);
       }
       genresIds.length
         ? genresIds.forEach(el => {
@@ -39,7 +37,7 @@ export function renderFilms(movies, movieListEl) {
                     <p class="movie_card_title">${movie.original_title}</p>
                     <div class="movie_card_desc">
                         <p class="movie_card_ganres">${genres}</p>
-                        <p class="movie_card_year">${date} year</p>
+                        <p class="movie_card_year">| ${date}</p>
                         <span class="movie_card_rating">${movie.vote_average}</span>
                         </div>
                 </li>`;
