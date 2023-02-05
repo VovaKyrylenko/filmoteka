@@ -53,12 +53,11 @@ class FILMAPI {
       const resp = await axios.get(
         `${this.#BASE_URL}/movie/${id}?api_key=${this.#API_KEY}`
       );
-      if (!resp.data.total_pages)
+      if (!resp.data)
         throw new Error(
           '💔 Sorry but we can`t load this film, please try again later'
         );
-      this.max = resp.data.total_pages;
-      return resp.data.results;
+      return resp.data;
     } catch (err) {
       Notiflix.Notify.failure(err.message);
       console.log(err.message);
