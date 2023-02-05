@@ -2,6 +2,7 @@ import * as basicLightbox from 'basiclightbox';
 import { API } from './service';
 import { filmBoxRef } from './helpers';
 import '../../node_modules/basiclightbox/dist/basicLightbox.min.css';
+import svgsSprite from '../images/icons/icons.svg';
 
 filmBoxRef.addEventListener('click', onContainerClick);
 
@@ -31,7 +32,7 @@ async function onContainerClick(evt) {
 function createModal(markup) {
   const modal = basicLightbox.create(markup, {
     onShow: modal => {
-      modal.element().querySelector('.button-modal').onclick = modal.close;
+      modal.element().querySelector('.button__modal').onclick = modal.close;
 
       modalCloseByEsc();
 
@@ -63,7 +64,7 @@ function createModal(markup) {
     const onPressEsc = e => {
       if (e.code !== 'Escape') {
         return false;
-      };
+      }
 
       modal.close();
       document.removeEventListener('keydown', onPressEsc);
@@ -86,59 +87,59 @@ function renderModalMarcup({
 }) {
   return `<div class="backdrop" data-modal>
   <div class="modal">
-    <button class="button-modal" type="button" data-modal-close>
-      <svg class="icon-close" width="14" height="14">
-        <use href="./images/icons/icons.svg#icon-close"></use>
+    <button class="button__modal" type="button" data-modal-close>
+      <svg class="icon__close" width="14" height="14">
+        <use href="${svgsSprite}#close"></use>
       </svg>
     </button>
-    <div class="movie_description_card">
-      <div class="div_movie_img">
+    <div class="movie__description-card">
+      <div class="div__movie-img" >
         <img
-          class="movie_img"
+          class="movie__img"
           src="https://image.tmdb.org/t/p/w500${poster_path}"
           alt="info of movie"
         />
       </div>
-      <div class="movie_desc">
-        <p class="movie_title">${original_title}</p>
-        <table class="movie_characters">
-          <tbody class="character_table">
+      <div class="movie__desc">
+        <p class="movie__title">${original_title}</p>
+        <table class="movie__characters">
+          <tbody class="character__table">
             <tr>
               <td class="character">Vote / Votes</td>
-              <td class="character_item"><span class="vote">${vote_average.toFixed(
+              <td class="character__item "><span class="vote">${vote_average.toFixed(
                 1
-              )}</span>/${vote_count}</td>
+              )}</span><span class="vote__slash">/</span><span class="vote__grey">${vote_count}</span></td>
             </tr>
             <tr>
               <td class="character">Popularity</td>
-              <td class="character_item">${popularity.toFixed(1)}</td>
+              <td class="character__item">${popularity.toFixed(1)}</td>
             </tr>
             <tr>
               <td class="character">Original Title</td>
-              <td class="character_item">${original_title}</td>
+              <td class="character__item">${original_title}</td>
             </tr>
             <tr>
               <td class="character">Genre</td>
-              <td class="character_item">${genres[0].name}</td>
+              <td class="character__item">${genres[0].name}</td>
             </tr>
           </tbody>
         </table>
-        <p class="movie_about">About</p>
-        <p class="movie_about-description">
+        <p class="movie__about">About</p>
+        <p class="movie__about-description">
         ${overview}
         </p>
-        <ul class="button_list">
-          <li class="button_item">
-            <button class="movie_to-watched" type="button">
+        <ul class="button__list">
+          <li class="button__item">
+            <button class="movie__to-watched" type="button">
               add to Watched
             </button>
           </li>
-          <li class="button_item">
-            <button class="movie_to-queue" type="button">add to queue</button>
+          <li class="button__item">
+            <button class="movie__to-queue" type="button">add to queue</button>
           </li>
         </ul>
       </div>
     </div>
   </div>
 </div>`;
-};
+}
