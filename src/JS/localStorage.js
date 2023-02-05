@@ -1,3 +1,5 @@
+import '../../node_modules/basiclightbox/dist/basicLightbox.min.css';
+
 class FilmsLocalStorage {
   #WATCH_KEY;
   #QUEUE_KEY;
@@ -55,6 +57,18 @@ class FilmsLocalStorage {
     const from = 20 * (this.pageQueue - 1);
     const to = 20 * this.pageQueue - 1;
     return filmsArr.slice(from, to);
+  }
+
+  checkWatched(id) {
+    const filmsJSON = localStorage.getItem(this.#WATCH_KEY);
+    const filmsArr = JSON.parse(filmsJSON);
+    return filmsArr.some(film => film.id == id);
+  }
+
+  checkQueue(id) {
+    const filmsJSON = localStorage.getItem(this.#QUEUE_KEY);
+    const filmsArr = JSON.parse(filmsJSON);
+    return filmsArr.some(film => film.id == id);
   }
 
   addFilmToWatch(film) {
