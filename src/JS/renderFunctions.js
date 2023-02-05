@@ -25,7 +25,7 @@ export function renderFilms(movies, movieListEl) {
       // створення url постерів
       const imgUrl = movie.poster_path
         ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-        : 'https://padletuploads.blob.core.windows.net/prod/338313757/xv9cNVhJOnCldshv-zjMjA/f41906143bc5eb004cac88418b2a97a7.jpeg';
+        : 'https://github.com/VovaKyrylenko/filmoteka/blob/main/src/images/photo_2023-02-05_18-38-12.jpg';
 
       // виділення року із дати
       const date = movie.release_date
@@ -35,7 +35,7 @@ export function renderFilms(movies, movieListEl) {
       // розмітка картки
       return `
                 <li class="movie_card" js-id=${movie.id}>
-                    <img class="movie_card_img" src="${imgUrl}" alt="film" />
+                <div class="img__thumb" style="background-image:url(${imgUrl})"></div>
                     <p class="movie_card_title">${movie.original_title}</p>
                     <div class="movie_card_desc">
                         <p class="movie_card_ganres">${genres}</p>
