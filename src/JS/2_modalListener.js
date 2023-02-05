@@ -1,8 +1,8 @@
 import * as basicLightbox from 'basiclightbox';
 import { API } from './service';
 import { filmBoxRef } from './helpers';
-import '../../node_modules/basiclightbox/dist/basicLightbox.min.css';
 import { storage } from './localStorage.js';
+import '../../node_modules/basiclightbox/dist/basicLightbox.min.css';
 
 filmBoxRef.addEventListener('click', onContainerClick);
 
@@ -27,32 +27,28 @@ async function onContainerClick(evt) {
   // Додаємо в чергу або переглянуті кнопками
   const btnWatched = document.querySelector('.movie_to-watched');
   const btnQueue = document.querySelector('.movie_to-queue');
-  btnWatched.addEventListener('click', setWatched);
-  btnQueue.addEventListener('click', setQueue);
-  // конoпка addWatch
-  function setWatched() {
-    if (storage.checkWatched(filmId)) {
-      storage.delFilmFromWatch(filmId);
-      console.log('є фільм видалити');
-    } else {
-      btnWatched.disabled = true;
-      storage.addFilmToWatch(movie);
-    }
+  
+  if (storage.checkWatched(filmId)) {
+    btnWatched.disabled = true;
   }
-  // конoпка Queue
-  function setQueue() {
-    if (storage.checkQueue(filmId)) {
-      storage.delFilmFromQueue(filmId);
-      console.log('є фільм видалити');
-    } else {
-      btnQueue.disabled = true;
-      console.log('немає додати');
-      storage.addFilmToQueue(movie);
-    }
+  if (storage.checkQueue(filmId)) {
+    btnQueue.disabled = true;
   }
 
-  // Знімаємо слухач
-  filmBoxRef.removeEventListener('click', onContainerClick);
+  btnWatched.addEventListener('click', setWatchedClick);
+  btnQueue.addEventListener('click', setQueueClick);
+  
+  function setWatchedClick(e) {
+    e.preventDefault();
+    storage.addFilmToWatch(movie);
+    btnWatched.removeEventListener('click', setWatchedClick);
+  }
+  
+  function setQueueClick(e) {
+      e.preventDefault();
+      storage.addFilmToQueue(movie);
+      btnQueue.removeEventListener('click', setQueueClick);
+  }
 }
 
 // Створення модалки
