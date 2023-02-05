@@ -1,5 +1,3 @@
-import '../../node_modules/basiclightbox/dist/basicLightbox.min.css';
-
 class FilmsLocalStorage {
   #WATCH_KEY;
   #QUEUE_KEY;
