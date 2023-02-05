@@ -2,6 +2,7 @@ import * as basicLightbox from 'basiclightbox';
 import { API } from './service';
 import { filmBoxRef } from './helpers';
 import '../../node_modules/basiclightbox/dist/basicLightbox.min.css';
+import { storage } from './localStorage.js';
 
 filmBoxRef.addEventListener('click', onContainerClick);
 
@@ -22,6 +23,33 @@ async function onContainerClick(evt) {
   // // Створюємо і показуємо модалку
   const instance = createModal(renderModalMarcup(movie));
   instance.show();
+
+  // Додаємо в чергу або переглянуті кнопками
+  const btnWatched = document.querySelector('.movie_to-watched');
+  const btnQueue = document.querySelector('.movie_to-queue');
+  btnWatched.addEventListener('click', setWatched);
+  btnQueue.addEventListener('click', setQueue);
+  // конoпка addWatch
+  function setWatched() {
+    if (storage.checkWatched(filmId)) {
+      storage.delFilmFromWatch(filmId);
+      console.log('є фільм видалити');
+    } else {
+      btnWatched.disabled = true;
+      storage.addFilmToWatch(movie);
+    }
+  }
+  // конoпка Queue
+  function setQueue() {
+    if (storage.checkQueue(filmId)) {
+      storage.delFilmFromQueue(filmId);
+      console.log('є фільм видалити');
+    } else {
+      btnQueue.disabled = true;
+      console.log('немає додати');
+      storage.addFilmToQueue(movie);
+    }
+  }
 
   // Знімаємо слухач
   filmBoxRef.removeEventListener('click', onContainerClick);
@@ -63,7 +91,7 @@ function createModal(markup) {
     const onPressEsc = e => {
       if (e.code !== 'Escape') {
         return false;
-      };
+      }
 
       modal.close();
       document.removeEventListener('keydown', onPressEsc);
@@ -141,4 +169,4 @@ function renderModalMarcup({
     </div>
   </div>
 </div>`;
-};
+}
