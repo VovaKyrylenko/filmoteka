@@ -7,12 +7,10 @@ export function renderFilms(movies, movieListEl) {
     .map(movie => {
       genresIds = movie.genre_ids;
       // створення списку жанрів
-      console.log('genresIds.length < 3:', genresIds.length < 3);
       const genresList = [];
       if (genresIds.length > 3) {
         genresIds = genresIds.slice(0, 2);
         genresIds.push(9999);
-        console.log('genresIds:', genresIds);
       }
       genresIds.length
         ? genresIds.forEach(el => {
