@@ -317,8 +317,12 @@
   }
 
   @include desktop(){
-    padding: 40px 12px;
+    padding-left: 36px;
+      padding-top: 40;
+      padding-right: 72px;
+      padding-bottom: 40px;
     max-width: 806px;
+    max-height: 558px;
   }
 }
 
