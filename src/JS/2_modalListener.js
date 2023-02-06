@@ -1,81 +1,77 @@
 import * as basicLightbox from 'basiclightbox';
 import { API } from './service';
 import { filmBoxRef } from './helpers';
-import '../../node_modules/basiclightbox/dist/basicLightbox.min.css';
-import svgsSprite from '../images/icons/icons.svg';
+import { storage } from './localStorage.js';
+import Notiflix from 'notiflix';
+import 'basiclightbox/dist/basicLightbox.min.css';
 
 filmBoxRef.addEventListener('click', onContainerClick);
 
 async function onContainerClick(evt) {
-  // Перевіряємо чи клікаєм куди треба
   if (evt.target.classList.contains('js-films-list')) {
     return;
   }
 
-  // Знаходимо id вибраного фільму
-  const filmId = Number(
-    evt.target.closest('.movie_card').attributes.getNamedItem('js-id').value
-  );
-
-  // Фетчимо об'єкт фільму
-  const movie = await API.fetchById(filmId);
-
-  // // Створюємо і показуємо модалку
-  const instance = createModal(renderModalMarcup(movie));
-  instance.show();
-
-  // Знімаємо слухач
-  filmBoxRef.removeEventListener('click', onContainerClick);
+  try {
+    const filmId = Number(
+      evt.target.closest('.movie_card').attributes.getNamedItem('js-id').value
+    );
+    const movie = await API.fetchById(filmId);
+    if (!movie)
+      throw new Error('❌ Something go wrong, so we can`t load your film');
+    const modal = createModal(renderModalMarcup(movie));
+    modal.show();
+    modalCloseByBackdropClick(modal);
+    checkAndDisableButtons(filmId, movie);
+  } catch (err) {
+    Notiflix.Notify.failure(err.message);
+    console.log(err.message);
+  }
 }
 
-// Створення модалки
+function checkAndDisableButtons(filmId, movie) {
+  const btnWatched = document.querySelector('.movie__to-watched');
+  const btnQueue = document.querySelector('.movie__to-queue');
+
+  const setWatchedClick = e => {
+    e.preventDefault();
+    if (e.target.hasAttribute('js-disabled')) {
+      Notiflix.Notify.warning(
+        '🎬 Your film has already sucessfully been added'
+      );
+      return;
+    }
+    storage.addFilmToWatch(movie);
+    btnWatched.setAttribute('js-disabled', '');
+  };
+
+  const setQueueClick = e => {
+    e.preventDefault();
+    if (e.target.hasAttribute('js-disabled')) {
+      Notiflix.Notify.warning(
+        '🎬 Your film has already sucessfully been added'
+      );
+      return;
+    }
+    storage.addFilmToQueue(movie);
+    btnQueue.setAttribute('js-disabled', '');
+  };
+
+  if (storage.checkWatched(filmId)) btnWatched.setAttribute('js-disabled', '');
+  if (storage.checkQueue(filmId)) btnQueue.setAttribute('js-disabled', '');
+
+  btnWatched.addEventListener('click', setWatchedClick);
+  btnQueue.addEventListener('click', setQueueClick);
+}
+
 function createModal(markup) {
   const modal = basicLightbox.create(markup, {
-    onShow: modal => {
-      modal.element().querySelector('.button__modal').onclick = modal.close;
-
-      modalCloseByEsc();
-
-      modalCloseByBackdropClick();
-
-      document.body.style.overflow = 'hidden';
-
-      filmBoxRef.addEventListener('click', onContainerClick);
-    },
-
-    onClose: () => {
-      filmBoxRef.addEventListener('click', onContainerClick);
-
-      document.body.style.overflow = 'visible';
-    },
+    onShow: modalCloseByEsc,
   });
-
-  const modalCloseByBackdropClick = instance => {
-    const onBackdropClick = e => {
-      if (e.target.attributes.getNamedItem('data-modal')) {
-        modal.close();
-        document.removeEventListener('click', onBackdropClick);
-      }
-    };
-    document.addEventListener('click', onBackdropClick);
-  };
-
-  const modalCloseByEsc = () => {
-    const onPressEsc = e => {
-      if (e.code !== 'Escape') {
-        return false;
-      }
-
-      modal.close();
-      document.removeEventListener('keydown', onPressEsc);
-    };
-    document.addEventListener('keydown', onPressEsc);
-  };
 
   return modal;
 }
 
-// Рендер розмітки
 function renderModalMarcup({
   poster_path,
   original_title,
@@ -85,12 +81,9 @@ function renderModalMarcup({
   genres,
   overview,
 }) {
-  return `<div class="backdrop" data-modal>
+  return `
   <div class="modal">
-    <button class="button__modal" type="button" data-modal-close>
-      <svg class="icon__close" width="14" height="14">
-        <use href="${svgsSprite}#close"></use>
-      </svg>
+    <button class="button__modal" type="button">
     </button>
     <div class="movie__description-card">
       <div class="div__movie-img" >
@@ -140,6 +133,24 @@ function renderModalMarcup({
         </ul>
       </div>
     </div>
-  </div>
-</div>`;
+  </div>`;
+}
+
+function modalCloseByBackdropClick(instance) {
+  const modalBtn = document.querySelector('.button__modal');
+  const onBackdropClick = e => {
+    e.preventDefault();
+    instance.close();
+    modalBtn.removeEventListener('click', onBackdropClick);
+  };
+  modalBtn.addEventListener('click', onBackdropClick);
+}
+
+function modalCloseByEsc(instance) {
+  const onPressEsc = e => {
+    if (e.code !== 'Escape') return false;
+    instance.close();
+    document.removeEventListener('keydown', onPressEsc);
+  };
+  document.addEventListener('keydown', onPressEsc);
 }
