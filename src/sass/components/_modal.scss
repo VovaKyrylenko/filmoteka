@@ -1,6 +1,5 @@
 .movie {
   &__description-card {
-    
     @include tablet() {
       display: flex;
       gap: 68px;
@@ -144,7 +143,8 @@
     }
   }
 
-  &__modal {
+  &__modal,
+  &__trailer--close {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -164,6 +164,16 @@
     background-repeat: no-repeat;
     cursor: pointer;
     border: none;
+  }
+
+  &__trailer--close {
+    top: 0;
+    right: 0;
+
+    width: 30px;
+    height: 30px;
+
+    background-color: #fff;
   }
 }
 
@@ -248,5 +258,41 @@
 
   &__slash {
     color: #8c8c8c;
+  }
+}
+
+.trailer-btn {
+  margin-top: 15px;
+  min-width: 110px;
+
+  font-family: Roboto, sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: calc(16 / 12);
+  text-align: center;
+  text-transform: uppercase;
+  color: #000000;
+
+  cursor: pointer;
+  border: 1px #000000 solid;
+  border-radius: 5px;
+  padding: 12px 8px;
+
+  @include desktop() {
+    width: 136px;
+    padding: 13px 8px;
+  }
+
+  @include tablet() {
+    width: 125px;
+    padding: 13px 7px;
+  }
+
+  &:hover,
+  &:focus {
+    background: #ff6b01;
+    color: #ffffff;
+    border: none;
   }
 }
