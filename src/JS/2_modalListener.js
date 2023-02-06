@@ -2,103 +2,76 @@ import * as basicLightbox from 'basiclightbox';
 import { API } from './service';
 import { filmBoxRef } from './helpers';
 import { storage } from './localStorage.js';
-import '../../node_modules/basiclightbox/dist/basicLightbox.min.css';
+import Notiflix from 'notiflix';
+import 'basiclightbox/dist/basicLightbox.min.css';
 
 filmBoxRef.addEventListener('click', onContainerClick);
 
 async function onContainerClick(evt) {
-  // Перевіряємо чи клікаєм куди треба
   if (evt.target.classList.contains('js-films-list')) {
     return;
   }
 
-  // Знаходимо id вибраного фільму
-  const filmId = Number(
-    evt.target.closest('.movie_card').attributes.getNamedItem('js-id').value
-  );
-
-  // Фетчимо об'єкт фільму
-  const movie = await API.fetchById(filmId);
-
-  // // Створюємо і показуємо модалку
-  const instance = createModal(renderModalMarcup(movie));
-  instance.show();
-
-  // Додаємо в чергу або переглянуті кнопками
-  const btnWatched = document.querySelector('.movie_to-watched');
-  const btnQueue = document.querySelector('.movie_to-queue');
-  
-  if (storage.checkWatched(filmId)) {
-    btnWatched.disabled = true;
-  }
-  if (storage.checkQueue(filmId)) {
-    btnQueue.disabled = true;
-  }
-
-  btnWatched.addEventListener('click', setWatchedClick);
-  btnQueue.addEventListener('click', setQueueClick);
-  
-  function setWatchedClick(e) {
-    e.preventDefault();
-    storage.addFilmToWatch(movie);
-    btnWatched.removeEventListener('click', setWatchedClick);
-  }
-  
-  function setQueueClick(e) {
-      e.preventDefault();
-      storage.addFilmToQueue(movie);
-      btnQueue.removeEventListener('click', setQueueClick);
+  try {
+    const filmId = Number(
+      evt.target.closest('.movie_card').attributes.getNamedItem('js-id').value
+    );
+    const movie = await API.fetchById(filmId);
+    if (!movie)
+      throw new Error('❌ Something go wrong, so we can`t load your film');
+    const modal = createModal(renderModalMarcup(movie));
+    modal.show();
+    modalCloseByBackdropClick(modal);
+    checkAndDisableButtons(filmId, movie);
+  } catch (err) {
+    Notiflix.Notify.failure(err.message);
+    console.log(err.message);
   }
 }
 
-// Створення модалки
+function checkAndDisableButtons(filmId, movie) {
+  const btnWatched = document.querySelector('.movie_to-watched');
+  const btnQueue = document.querySelector('.movie_to-queue');
+
+  const setWatchedClick = e => {
+    e.preventDefault();
+    if (e.target.hasAttribute('js-disabled')) {
+      Notiflix.Notify.warning(
+        '🎬 Your film has already sucessfully been added'
+      );
+      return;
+    }
+    storage.addFilmToWatch(movie);
+    btnWatched.setAttribute('js-disabled', '');
+  };
+
+  const setQueueClick = e => {
+    e.preventDefault();
+    if (e.target.hasAttribute('js-disabled')) {
+      Notiflix.Notify.warning(
+        '🎬 Your film has already sucessfully been added'
+      );
+      return;
+    }
+    storage.addFilmToQueue(movie);
+    btnQueue.setAttribute('js-disabled', '');
+  };
+
+  if (storage.checkWatched(filmId)) btnWatched.setAttribute('js-disabled', '');
+  if (storage.checkQueue(filmId)) btnQueue.setAttribute('js-disabled', '');
+
+  btnWatched.addEventListener('click', setWatchedClick);
+  btnQueue.addEventListener('click', setQueueClick);
+}
+
 function createModal(markup) {
   const modal = basicLightbox.create(markup, {
-    onShow: modal => {
-      modal.element().querySelector('.button-modal').onclick = modal.close;
-
-      modalCloseByEsc();
-
-      modalCloseByBackdropClick();
-
-      document.body.style.overflow = 'hidden';
-
-      filmBoxRef.addEventListener('click', onContainerClick);
-    },
-
-    onClose: () => {
-      filmBoxRef.addEventListener('click', onContainerClick);
-
-      document.body.style.overflow = 'visible';
-    },
+    onShow: modalCloseByEsc,
   });
-
-  const modalCloseByBackdropClick = instance => {
-    const onBackdropClick = e => {
-      if (e.target.attributes.getNamedItem('data-modal')) {
-        modal.close();
-        document.removeEventListener('click', onBackdropClick);
-      }
-    };
-    document.addEventListener('click', onBackdropClick);
-  };
-
-  const modalCloseByEsc = () => {
-    const onPressEsc = e => {
-      if (e.code !== 'Escape') {
-        return false;
-      }
-
-      modal.close();
-      document.removeEventListener('keydown', onPressEsc);
-    };
-    document.addEventListener('keydown', onPressEsc);
-  };
 
   return modal;
 }
 
-// Рендер розмітки
 function renderModalMarcup({
   poster_path,
   original_title,
@@ -111,9 +84,7 @@ function renderModalMarcup({
   return `<div class="backdrop" data-modal>
   <div class="modal">
     <button class="button-modal" type="button" data-modal-close>
-      <svg class="icon-close" width="14" height="14">
-        <use href="./images/icons/icons.svg#icon-close"></use>
-      </svg>
+      
     </button>
     <div class="movie_description_card">
       <div class="div_movie_img">
@@ -165,4 +136,23 @@ function renderModalMarcup({
     </div>
   </div>
 </div>`;
+}
+
+function modalCloseByBackdropClick(instance) {
+  const modalBtn = document.querySelector('.button-modal');
+  const onBackdropClick = e => {
+    e.preventDefault();
+    instance.close();
+    modalBtn.removeEventListener('click', onBackdropClick);
+  };
+  modalBtn.addEventListener('click', onBackdropClick);
+}
+
+function modalCloseByEsc(instance) {
+  const onPressEsc = e => {
+    if (e.code !== 'Escape') return false;
+    instance.close();
+    document.removeEventListener('keydown', onPressEsc);
+  };
+  document.addEventListener('keydown', onPressEsc);
 }
