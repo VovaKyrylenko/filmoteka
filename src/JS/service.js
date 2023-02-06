@@ -51,7 +51,9 @@ class FILMAPI {
   async fetchById(id) {
     try {
       const resp = await axios.get(
-        `${this.#BASE_URL}/movie/${id}?api_key=${this.#API_KEY}`
+        `${this.#BASE_URL}/movie/${id}?api_key=${
+          this.#API_KEY
+        }&append_to_response=videos`
       );
       if (!resp.data)
         throw new Error(
