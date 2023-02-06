@@ -1,27 +1,35 @@
 import { genreInfo } from './helpers';
 import { filmBoxRef } from './helpers';
 import { API } from './service';
+import { storage } from './localStorage';
 
 export function renderFilms(movies, movieListEl) {
   const genresInfo = JSON.parse(genreInfo);
 
   movieListEl.innerHTML = movies
     .map(movie => {
-      genresIds = movie.genre_ids;
-      // створення списку жанрів
-      const genresList = [];
-      if (genresIds.length > 3) {
-        genresIds = genresIds.slice(0, 2);
-        genresIds.push(9999);
+      let genres = [];
+      if (movie.genre_ids) {
+        genresIds = movie.genre_ids;
+        // створення списку жанрів
+        const genresList = [];
+        if (genresIds.length > 3) {
+          genresIds = genresIds.slice(0, 2);
+          genresIds.push(9999);
+        }
+        genresIds.length
+          ? genresIds.forEach(el => {
+              elem = genresInfo.genres.find(opt => opt.id === el).name;
+              genresList.push(elem);
+            })
+          : genresList.push('Another genre');
+        genres = genresList.join(', ');
+      } else if (movie.genres) {
+        if (!movie.genres.length) genres.push('Another genre');
+        genres = movie.genres.map(el => el.name);
+        if (genres.length > 3) genres = genres.slice(0, 2);
+        genres = genres.join(', ');
       }
-      genresIds.length
-        ? genresIds.forEach(el => {
-            elem = genresInfo.genres.find(opt => opt.id === el).name;
-            genresList.push(elem);
-          })
-        : genresList.push('Another genre');
-      genres = genresList.join(', ');
-
       // створення url постерів
       const imgUrl = movie.poster_path
         ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
@@ -105,7 +113,7 @@ export function pagination(activePage, totalPages) {
   return result;
 }
 
-export function renderPagination(paginationArr, filmBoxRef) {
+export function renderPagination(paginationArr, filmBoxRef, callback) {
   const paginationUl = `<ul class="pagination"></ul>`;
   let paginationUlRef = document.querySelector('.pagination');
   if (paginationUlRef) {
@@ -171,10 +179,10 @@ export function renderPagination(paginationArr, filmBoxRef) {
     }
   });
 
-  paginationUlRef.addEventListener('click', listClickHandler);
+  paginationUlRef.addEventListener('click', callback);
 }
 
-function listClickHandler(event) {
+export function listClickHandlerMain(event) {
   event.preventDefault();
   const element = event.target;
   const pageValue = event.target.textContent;
@@ -207,5 +215,75 @@ function listClickHandler(event) {
   }
 
   const paginationArr = pagination(API.getPage(), API.getMax());
+  renderPagination(paginationArr, filmBoxRef);
+}
+
+export function listClickHandlerWatch(event) {
+  event.preventDefault();
+  const element = event.target;
+  const pageValue = event.target.textContent;
+  const trimedValue = pageValue.trim();
+
+  if (element.classList[0] === 'pagination') {
+    return;
+  }
+
+  filmBoxRef.innerHTML = '';
+
+  if (trimedValue === pageValue) {
+    if (Number(pageValue) < storage.getMaxWatch() + 1) {
+      storage.setPageWatch(Number(pageValue));
+      const films = storage.getTwentyFromWatch();
+      renderFilms(films, filmBoxRef);
+    }
+  } else if (element.classList[0] === 'pagination__right-arrow') {
+    storage.incrementPageWatch();
+    const films = storage.getTwentyFromWatch();
+    renderFilms(films, filmBoxRef);
+  } else {
+    storage.decrementPageWatch();
+    const films = storage.getTwentyFromWatch();
+    renderFilms(films, filmBoxRef);
+  }
+
+  const paginationArr = pagination(
+    storage.getPageWatch(),
+    storage.getMaxWatch()
+  );
+  renderPagination(paginationArr, filmBoxRef);
+}
+
+export function listClickHandlerQueue(event) {
+  event.preventDefault();
+  const element = event.target;
+  const pageValue = event.target.textContent;
+  const trimedValue = pageValue.trim();
+
+  if (element.classList[0] === 'pagination') {
+    return;
+  }
+
+  filmBoxRef.innerHTML = '';
+
+  if (trimedValue === pageValue) {
+    if (Number(pageValue) < storage.getMaxQueue() + 1) {
+      storage.setPageQueue(Number(pageValue));
+      const films = storage.getTwentyFromQueue();
+      renderFilms(films, filmBoxRef);
+    }
+  } else if (element.classList[0] === 'pagination__right-arrow') {
+    storage.incrementPageQueue();
+    const films = storage.getTwentyFromQueue();
+    renderFilms(films, filmBoxRef);
+  } else {
+    storage.decrementPageQueue();
+    const films = storage.getTwentyFromQueue();
+    renderFilms(films, filmBoxRef);
+  }
+
+  const paginationArr = pagination(
+    storage.getPageQueue(),
+    storage.getMaxQueue()
+  );
   renderPagination(paginationArr, filmBoxRef);
 }

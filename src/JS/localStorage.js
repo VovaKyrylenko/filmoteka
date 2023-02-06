@@ -27,18 +27,32 @@ class FilmsLocalStorage {
     this.maxQueue = Math.ceil(filmsToQueue.length / 20);
   }
 
-  incrementPage() {
-    if (this.page === this.max) {
+  incrementPageWatch() {
+    if (this.pageWatch === this.maxWatch) {
       return;
     }
-    this.page += 1;
+    this.pageWatch += 1;
   }
 
-  decrementPage() {
-    if (this.page === 1) {
+  decrementPageWatch() {
+    if (this.pageWatch === 1) {
       return;
     }
-    this.page -= 1;
+    this.pageWatch -= 1;
+  }
+
+  incrementPageQueue() {
+    if (this.pageQueue === this.maxQueue) {
+      return;
+    }
+    this.pageQueue += 1;
+  }
+
+  decrementPageQueue() {
+    if (this.pageQueue === 1) {
+      return;
+    }
+    this.pageQueue -= 1;
   }
 
   getTwentyFromWatch() {

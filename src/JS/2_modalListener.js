@@ -43,7 +43,9 @@ async function onContainerClick(evt) {
           return film;
         }
       });
-      createModalForTrailer(renderVideo(film)).show();
+      const trailerModalInsatance = createModalForTrailer(renderVideo(film));
+      trailerModalInsatance.show();
+      modalCloseByBackdropClick(trailerModalInsatance);
     });
   } catch (err) {
     Notiflix.Notify.failure(err.message);
@@ -160,7 +162,7 @@ function renderModalMarcup({
 }
 
 function modalCloseByBackdropClick(instance) {
-  const modalBtn = document.querySelector('.button__modal');
+  const modalBtn = instance.element().querySelector('button');
   const onBackdropClick = e => {
     e.preventDefault();
     instance.close();
@@ -180,14 +182,8 @@ function modalCloseByEsc(instance) {
 
 function createModalForTrailer(markup) {
   const trailerModal = basicLightbox.create(markup, {
-    onShow: () => window.addEventListener('keydown', onEscKeyPress),
-    onClose: () => window.removeEventListener('keydown', onEscKeyPress),
+    onShow: modalCloseByEsc,
   });
-  function onEscKeyPress(evt) {
-    if (evt.code === 'Escape') {
-      trailerModal.close();
-    }
-  }
   return trailerModal;
 }
 
@@ -198,5 +194,6 @@ function renderVideo({ key }) {
   src="https://www.youtube.com/embed/${key}"
   frameborder="0"
   allowfullscreen
-></iframe>`;
+></iframe>
+  <button type="button" class="button__trailer--close"></button>`;
 }
