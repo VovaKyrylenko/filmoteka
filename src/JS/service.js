@@ -23,6 +23,7 @@ class FILMAPI {
       if (!resp.data.total_pages)
         throw new Error('💔 Sorry but we can`t load films');
       this.max = resp.data.total_pages;
+      if (this.max > 500) this.max = 500;
       return resp.data.results;
     } catch (err) {
       Notiflix.Notify.failure(err.message);
@@ -41,6 +42,7 @@ class FILMAPI {
       if (!resp.data.total_pages)
         throw new Error('💔 Sorry but we can`t load films');
       this.max = resp.data.total_pages;
+      if (this.max > 500) this.max = 500;
       return resp.data.results;
     } catch (err) {
       Notiflix.Notify.failure(err.message);
