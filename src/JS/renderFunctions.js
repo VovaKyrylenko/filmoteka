@@ -63,6 +63,10 @@ export function pagination(activePage, totalPages) {
     return;
   }
 
+  if (totalPages === 1) {
+    return ['1active'];
+  }
+
   const arr = [
     activePage - 2,
     activePage - 1,
