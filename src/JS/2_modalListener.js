@@ -23,6 +23,30 @@ async function onContainerClick(evt) {
     modal.show();
     modalCloseByBackdropClick(modal);
     checkAndDisableButtons(filmId, movie);
+
+    // Отримую доступ до кнопки показу трейлеру та приховую її
+    const trailerBtnRef = document.querySelector('.trailer-btn');
+    trailerBtnRef.hidden = true;
+
+    // У відповіді від сервера отримую інфо, чи є по обраному фільму масив з відео, а також перевіряю наявність саме трейлеру
+    const videos = movie.videos.results;
+    if (videos.length > 0) {
+      videos.every(video => !video.type.includes('Trailer'))
+        ? (trailerBtnRef.hidden = true)
+        : (trailerBtnRef.hidden = false);
+    }
+
+    // Додаю слухач на кнопку трейлера, колбек ф-я якої одразу створює модалку з трейлером та показує її
+    trailerBtnRef.addEventListener('click', () => {
+      const film = videos.find(film => {
+        if (film.type === 'Trailer') {
+          return film;
+        }
+      });
+      const trailerModalInsatance = createModalForTrailer(renderVideo(film));
+      trailerModalInsatance.show();
+      modalCloseByBackdropClick(trailerModalInsatance);
+    });
   } catch (err) {
     Notiflix.Notify.failure(err.message);
     console.log(err.message);
@@ -131,13 +155,14 @@ function renderModalMarcup({
             <button class="movie__to-queue" type="button">add to queue</button>
           </li>
         </ul>
+        <button class="trailer-btn" type="button">watch trailer</button>
       </div>
     </div>
   </div>`;
 }
 
 function modalCloseByBackdropClick(instance) {
-  const modalBtn = document.querySelector('.button__modal');
+  const modalBtn = instance.element().querySelector('button');
   const onBackdropClick = e => {
     e.preventDefault();
     instance.close();
@@ -153,4 +178,22 @@ function modalCloseByEsc(instance) {
     document.removeEventListener('keydown', onPressEsc);
   };
   document.addEventListener('keydown', onPressEsc);
+}
+
+function createModalForTrailer(markup) {
+  const trailerModal = basicLightbox.create(markup, {
+    onShow: modalCloseByEsc,
+  });
+  return trailerModal;
+}
+
+function renderVideo({ key }) {
+  return `<iframe
+  width="1141"
+  height="641"
+  src="https://www.youtube.com/embed/${key}"
+  frameborder="0"
+  allowfullscreen
+></iframe>
+  <button type="button" class="button__trailer--close"></button>`;
 }
