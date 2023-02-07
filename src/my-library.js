@@ -20,6 +20,9 @@ function onClick(evt) {
     spiner.start();
     const films = storage.getTwentyFromWatch();
     if (films.length === 0) {
+      const paginationUlRef = document.querySelector('.pagination');
+      paginationUlRef.innerHTML = '';
+      filmBoxRef.innerHTML = '';
       spiner.stop();
       return;
     }
@@ -36,6 +39,9 @@ function onClick(evt) {
     const films = storage.getTwentyFromQueue();
     if (films.length === 0) {
       spiner.stop();
+      const paginationUlRef = document.querySelector('.pagination');
+      paginationUlRef.innerHTML = '';
+      filmBoxRef.innerHTML = '';
       return;
     }
     renderFilms(films, filmBoxRef);
@@ -64,7 +70,6 @@ async function onContainerClick(evt) {
     const modal = createModal(renderModalMarcup(movie));
     modal.show();
     modalCloseByBackdropClick(modal);
-    checkAndDisableButtons(filmId, movie);
     onDeleteFilm(filmId, modal);
 
     // Отримую доступ до кнопки показу трейлеру та приховую її
@@ -94,41 +99,6 @@ async function onContainerClick(evt) {
     Notiflix.Notify.failure(err.message);
     console.log(err.message);
   }
-}
-
-function checkAndDisableButtons(filmId, movie) {
-  const btnWatched = document.querySelector('.movie__to-watched');
-  const btnQueue = document.querySelector('.movie__to-queue');
-
-  const setWatchedClick = e => {
-    e.preventDefault();
-    if (e.target.hasAttribute('js-disabled')) {
-      Notiflix.Notify.warning(
-        '🎬 Your film has already sucessfully been added'
-      );
-      return;
-    }
-    storage.addFilmToWatch(movie);
-    btnWatched.setAttribute('js-disabled', '');
-  };
-
-  const setQueueClick = e => {
-    e.preventDefault();
-    if (e.target.hasAttribute('js-disabled')) {
-      Notiflix.Notify.warning(
-        '🎬 Your film has already sucessfully been added'
-      );
-      return;
-    }
-    storage.addFilmToQueue(movie);
-    btnQueue.setAttribute('js-disabled', '');
-  };
-
-  if (storage.checkWatched(filmId)) btnWatched.setAttribute('js-disabled', '');
-  if (storage.checkQueue(filmId)) btnQueue.setAttribute('js-disabled', '');
-
-  btnWatched.addEventListener('click', setWatchedClick);
-  btnQueue.addEventListener('click', setQueueClick);
 }
 
 function createModal(markup) {
@@ -191,16 +161,14 @@ function renderModalMarcup({
         <ul class="button__list">
           <li class="button__item">
             <button class="movie__to-watched" type="button">
-              add to Watched
+              Delete from Watched
             </button>
           </li>
           <li class="button__item">
-            <button class="movie__to-queue" type="button">add to queue</button>
+            <button class="movie__to-queue" type="button">Delete from Queue</button>
           </li>
         </ul>
         <button class="trailer-btn" type="button">watch trailer</button>
-        <button class="deleteWatched-btn" type="button">Delete Watched</button>
-        <button class="deleteQueue-btn" type="button">Delete Queue</button>
       </div>
     </div>
   </div>`;
@@ -244,18 +212,17 @@ function renderVideo({ key }) {
 }
 
 function onDeleteFilm(filmId, modal) {
-  const deleteWatchedBtn = document.querySelector('.deleteWatched-btn');
-  const deleteQueueBtn = document.querySelector('.deleteQueue-btn');
+  const btnWatched = document.querySelector('.movie__to-watched');
+  const btnQueue = document.querySelector('.movie__to-queue');
+
   const deleteWatchedClick = e => {
     e.preventDefault();
     if (e.target.hasAttribute('js-disabled')) {
-      Notiflix.Notify.warning(
-        '🎬 Your film has already sucessfully been deleted'
-      );
+      Notiflix.Notify.warning('🎬 Your film is not in the Watched');
       return;
     }
     storage.delFilmFromWatch(filmId);
-    deleteWatchedBtn.setAttribute('js-disabled', '');
+    btnWatched.setAttribute('js-disabled', '');
     const filmsToWatch = storage.getTwentyFromWatch();
     renderFilms(filmsToWatch, filmBoxRef);
     const paginationArr = pagination(
@@ -267,19 +234,18 @@ function onDeleteFilm(filmId, modal) {
     if (filmsToWatch.length === 0) {
       const paginationUlRef = document.querySelector('.pagination');
       paginationUlRef.innerHTML = '';
+      filmBoxRef.innerHTML = '';
     }
   };
 
   const deleteQueueClick = e => {
     e.preventDefault();
     if (e.target.hasAttribute('js-disabled')) {
-      Notiflix.Notify.warning(
-        '🎬 Your film has already sucessfully been deleted'
-      );
+      Notiflix.Notify.warning('🎬 Your film is not in the Queue');
       return;
     }
     storage.delFilmFromQueue(filmId);
-    deleteQueueBtn.setAttribute('js-disabled', '');
+    btnQueue.setAttribute('js-disabled', '');
     const filmsToQueue = storage.getTwentyFromQueue();
     renderFilms(filmsToQueue, filmBoxRef);
     const paginationArr = pagination(
@@ -294,11 +260,9 @@ function onDeleteFilm(filmId, modal) {
     }
   };
 
-  if (!storage.checkWatched(filmId))
-    deleteWatchedBtn.setAttribute('js-disabled', '');
-  if (!storage.checkQueue(filmId))
-    deleteQueueBtn.setAttribute('js-disabled', '');
+  if (!storage.checkWatched(filmId)) btnWatched.setAttribute('js-disabled', '');
+  if (!storage.checkQueue(filmId)) btnQueue.setAttribute('js-disabled', '');
 
-  deleteWatchedBtn.addEventListener('click', deleteWatchedClick);
-  deleteQueueBtn.addEventListener('click', deleteQueueClick);
+  btnWatched.addEventListener('click', deleteWatchedClick);
+  btnQueue.addEventListener('click', deleteQueueClick);
 }
