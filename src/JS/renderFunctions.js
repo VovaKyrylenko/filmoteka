@@ -41,7 +41,7 @@ export function renderFilms(movies, movieListEl) {
       // створення url постерів
       const imgUrl = movie.poster_path
         ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-        : 'https://github.com/VovaKyrylenko/filmoteka/blob/main/src/images/photo_2023-02-05_18-38-12.jpg';
+        : 'https://myron5.github.io/goit-js-hw-07/кончене_фото.jpg';
 
       // виділення року із дати
       const date = movie.release_date
