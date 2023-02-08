@@ -21,6 +21,7 @@ async function onContainerClick(evt) {
       throw new Error('❌ Something go wrong, so we can`t load your film');
     const modal = createModal(renderModalMarcup(movie));
     modal.show();
+    document.body.style.overflow = "hidden";
     modalCloseByBackdropClick(modal);
     checkAndDisableButtons(filmId, movie);
 
@@ -91,6 +92,7 @@ function checkAndDisableButtons(filmId, movie) {
 function createModal(markup) {
   const modal = basicLightbox.create(markup, {
     onShow: modalCloseByEsc,
+    onClose: () => document.body.style.overflow = "",
   });
 
   return modal;
