@@ -12,7 +12,7 @@ class FilmsLocalStorage {
     const initArr = JSON.stringify([]);
 
     let filmsToWatch = JSON.parse(localStorage.getItem(this.#WATCH_KEY));
-    let filmsToQueue = JSON.parse(localStorage.getItem(this.#WATCH_KEY));
+    let filmsToQueue = JSON.parse(localStorage.getItem(this.#QUEUE_KEY));
 
     if (!filmsToWatch) {
       localStorage.setItem(this.#WATCH_KEY, initArr);

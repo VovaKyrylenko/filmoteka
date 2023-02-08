@@ -6,8 +6,6 @@ import {
   renderFilms,
   pagination,
   renderPagination,
-  listClickHandlerWatch,
-  listClickHandlerQueue,
 } from './JS/renderFunctions';
 import { spiner } from './JS/spiner.js';
 import Notiflix from 'notiflix';
@@ -15,41 +13,49 @@ import 'basiclightbox/dist/basicLightbox.min.css';
 
 listButton.addEventListener('click', onClick);
 
+const queueBtn = document.querySelector('.js-queue');
+queueBtn.click();
+queueBtn.focus();
+
 function onClick(evt) {
   if (evt.target.classList.contains('js-watched')) {
     spiner.start();
     const films = storage.getTwentyFromWatch();
     if (films.length === 0) {
       filmBoxRef.innerHTML = '';
+      Notiflix.Notify.warning("🙈 You haven't watched films");
       spiner.stop();
       return;
+    } else {
+      renderFilms(films, filmBoxRef);
+      const paginationArr = pagination(
+        storage.getPageWatch(),
+        storage.getMaxWatch()
+      );
+      filmBoxRef.setAttribute('data-id', 'watch-gallery');
+      renderPagination(paginationArr, filmBoxRef);
+      filmBoxRef.addEventListener('click', onContainerClickWatch);
+      spiner.stop();
     }
-    renderFilms(films, filmBoxRef);
-    const paginationArr = pagination(
-      storage.getPageWatch(),
-      storage.getMaxWatch()
-    );
-    filmBoxRef.setAttribute('data-id', 'watch-gallery');
-    renderPagination(paginationArr, filmBoxRef);
-    filmBoxRef.addEventListener('click', onContainerClickWatch);
-    spiner.stop();
   } else if (evt.target.classList.contains('js-queue')) {
     spiner.start();
-    const films = storage.getTwentyFromWatch();
+    const films = storage.getTwentyFromQueue();
     if (films.length === 0) {
       filmBoxRef.innerHTML = '';
+      Notiflix.Notify.warning("🗃 You haven't queued films");
       spiner.stop();
       return;
+    } else {
+      renderFilms(films, filmBoxRef);
+      const paginationArr = pagination(
+        storage.getPageQueue(),
+        storage.getMaxQueue()
+      );
+      filmBoxRef.setAttribute('data-id', 'queue-gallery');
+      renderPagination(paginationArr, filmBoxRef);
+      filmBoxRef.addEventListener('click', onContainerClickQueue);
+      spiner.stop();
     }
-    renderFilms(films, filmBoxRef);
-    const paginationArr = pagination(
-      storage.getPageQueue(),
-      storage.getMaxQueue()
-    );
-    filmBoxRef.setAttribute('data-id', 'queue-gallery');
-    renderPagination(paginationArr, filmBoxRef);
-    filmBoxRef.addEventListener('click', onContainerClickQueue);
-    spiner.stop();
   } else return;
 }
 

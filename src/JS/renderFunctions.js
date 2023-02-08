@@ -64,6 +64,8 @@ export function renderFilms(movies, movieListEl) {
 }
 
 export function pagination(activePage, totalPages) {
+  console.log(activePage, totalPages);
+
   if (typeof totalPages !== 'number' || typeof activePage !== 'number') {
     return;
   }
@@ -196,8 +198,9 @@ export function renderPagination(paginationArr, filmBoxRef) {
 
 function checkCurrentPage(evt) {
   const navListRef = document.querySelector('.nav__list');
+  console.log('XXX', navListRef);
   const el = [...navListRef.children].find(li => {
-    if (li.children[0].classList.contains('current')) {
+    if (li.firstElementChild.classList.contains('current')) {
       return li;
     }
   });
@@ -212,7 +215,7 @@ function checkCurrentPage(evt) {
   }
 }
 
-export function listClickHandlerMain(event) {
+function listClickHandlerMain(event) {
   event.preventDefault();
   const element = event.target;
   const pageValue = event.target.textContent;
@@ -248,7 +251,7 @@ export function listClickHandlerMain(event) {
   renderPagination(paginationArr, filmBoxRef);
 }
 
-export function listClickHandlerWatch(event) {
+function listClickHandlerWatch(event) {
   event.preventDefault();
   const element = event.target;
   const pageValue = event.target.textContent;
@@ -283,7 +286,7 @@ export function listClickHandlerWatch(event) {
   renderPagination(paginationArr, filmBoxRef);
 }
 
-export function listClickHandlerQueue(event) {
+function listClickHandlerQueue(event) {
   event.preventDefault();
   const element = event.target;
   const pageValue = event.target.textContent;

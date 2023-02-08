@@ -1,11 +1,6 @@
 import { filmBoxRef, formRef } from './helpers';
 import { API } from './service';
-import {
-  renderFilms,
-  pagination,
-  renderPagination,
-  listClickHandlerMain,
-} from './renderFunctions';
+import { renderFilms, pagination, renderPagination } from './renderFunctions';
 import { spiner } from './spiner.js';
 import Notiflix from 'notiflix';
 
