@@ -142,7 +142,9 @@ function renderModalMarcup({
             </tr>
             <tr>
               <td class="character">Genre</td>
-              <td class="character__item">${genres[0].name}</td>
+              <td class="character__item">${
+                genres.length === 0 ? 'Another genre' : genres[0].name
+              }</td>
             </tr>
           </tbody>
         </table>

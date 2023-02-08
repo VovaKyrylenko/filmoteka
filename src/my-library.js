@@ -29,7 +29,8 @@ function onClick(evt) {
       storage.getPageWatch(),
       storage.getMaxWatch()
     );
-    renderPagination(paginationArr, filmBoxRef, listClickHandlerWatch);
+    filmBoxRef.setAttribute('data-id', 'watch-gallery');
+    renderPagination(paginationArr, filmBoxRef);
     filmBoxRef.addEventListener('click', onContainerClickWatch);
     spiner.stop();
   } else if (evt.target.classList.contains('js-queue')) {
@@ -45,7 +46,8 @@ function onClick(evt) {
       storage.getPageQueue(),
       storage.getMaxQueue()
     );
-    renderPagination(paginationArr, filmBoxRef, listClickHandlerQueue);
+    filmBoxRef.setAttribute('data-id', 'queue-gallery');
+    renderPagination(paginationArr, filmBoxRef);
     filmBoxRef.addEventListener('click', onContainerClickQueue);
     spiner.stop();
   } else return;
@@ -241,7 +243,7 @@ function onDeleteFilm(filmId, modal, section) {
       storage.getPageWatch(),
       storage.getMaxWatch()
     );
-    renderPagination(paginationArr, filmBoxRef, listClickHandlerWatch);
+    renderPagination(paginationArr, filmBoxRef);
     modal.close();
     if (filmsToWatch.length === 0) {
       const paginationUlRef = document.querySelector('.pagination');
@@ -264,7 +266,7 @@ function onDeleteFilm(filmId, modal, section) {
       storage.getPageQueue(),
       storage.getMaxQueue()
     );
-    renderPagination(paginationArr, filmBoxRef, listClickHandlerQueue);
+    renderPagination(paginationArr, filmBoxRef);
     modal.close();
     if (filmsToQueue.length === 0) {
       const paginationUlRef = document.querySelector('.pagination');
