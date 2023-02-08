@@ -155,30 +155,30 @@ export function renderPagination(paginationArr, filmBoxRef, callback) {
       const updatedPageName = page.replace('active', '');
       paginationUlRef.insertAdjacentHTML(
         'beforeend',
-        `<li class="pagination__item pagination__item--isActive"> 
-        <button  class="pagination__link" aria-label="pagination-item>${updatedPageName}</button>
+        `<li class="pagination__item pagination__item--isActive">
+          <button class="pagination__link" type="button" aria-label="pagination-item">${updatedPageName}</button>
         </li>`
       );
     } else if (page === '...') {
       paginationUlRef.insertAdjacentHTML(
         'beforeend',
         `<li class="pagination__item pagination__item--desktop pagination__item--dots" >
-            <button class="pagination__link" aria-label="pagination-link">${page}</button>
-          </li>
+          <button class="pagination__link" type="button" aria-label="pagination-link">${page}</button>
+        </li>
         `
       );
     } else if (Number(page) === firstNumber || Number(page) === lastNumber) {
       paginationUlRef.insertAdjacentHTML(
         'beforeend',
         `<li class="pagination__item pagination__item--desktop">
-        <button class="pagination__link" aria-label="pagination-link">${page}</button>
+        <button class="pagination__link" type="button" aria-label="pagination-link">${page}</button>
         </li>
         `
       );
     } else {
       paginationUlRef.insertAdjacentHTML(
         'beforeend',
-        `<li class="pagination__item"><button class="pagination__link" aria-label="pagination-link">${page}</button></li>`
+        `<li class="pagination__item"><button class="pagination__link" type="button" aria-label="pagination-link">${page}</button></li>`
       );
     }
   });
