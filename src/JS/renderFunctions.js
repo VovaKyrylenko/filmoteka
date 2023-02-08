@@ -64,7 +64,7 @@ export function renderFilms(movies, movieListEl) {
 }
 
 export function pagination(activePage, totalPages) {
-  console.log(activePage, totalPages);
+  if (activePage == 1 && totalPages == 1) return [];
 
   if (typeof totalPages !== 'number' || typeof activePage !== 'number') {
     return;
