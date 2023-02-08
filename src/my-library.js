@@ -15,11 +15,22 @@ listButton.addEventListener('click', onClick);
 
 const queueBtn = document.querySelector('.js-queue');
 queueBtn.click();
-queueBtn.focus();
 
 function onClick(evt) {
+  const initFunc = () => {
+    document
+      .querySelector('.js-watched')
+      .classList.toggle('buttons__style--focus');
+    document
+      .querySelector('.js-queue')
+      .classList.toggle('buttons__style--focus');
+    filmBoxRef.removeEventListener('click', onContainerClickWatch);
+    filmBoxRef.removeEventListener('click', onContainerClickQueue);
+  };
+
   if (evt.target.classList.contains('js-watched')) {
     spiner.start();
+    initFunc();
     const films = storage.getTwentyFromWatch();
     if (films.length === 0) {
       filmBoxRef.innerHTML = '';
@@ -39,6 +50,7 @@ function onClick(evt) {
     }
   } else if (evt.target.classList.contains('js-queue')) {
     spiner.start();
+    initFunc();
     const films = storage.getTwentyFromQueue();
     if (films.length === 0) {
       filmBoxRef.innerHTML = '';
@@ -80,6 +92,7 @@ async function onContainerClick(evt, section) {
     const movie = await API.fetchById(filmId);
     if (!movie)
       throw new Error('❌ Something go wrong, so we can`t load your film');
+
     const modal = createModal(renderModalMarcup(movie, section), section);
     modal.show();
     modalCloseByBackdropClick(modal);
@@ -139,6 +152,14 @@ function renderModalMarcup(
   },
   section
 ) {
+  let delBtnMarkup = '';
+  if (section == 'queue')
+    delBtnMarkup =
+      '<button class="movie__to-queue" type="button">Delete from Queue</button>';
+  else if (section == 'watch')
+    delBtnMarkup =
+      '<button class="movie__to-watched" type="button">Delete from Watched</button>';
+
   return `
   <div class="modal">
     <button class="button__modal" type="button">
@@ -180,13 +201,7 @@ function renderModalMarcup(
         ${overview}
         </p>
         <ul class="button__list">
-          <li class="button__item">
-                ${
-                  section == 'watch'
-                    ? '<button class="movie__to-watched" type="button">Delete from Watched</button>'
-                    : '<button class="movie__to-queue" type="button">Delete from Queue</button>'
-                }
-          </li>
+          <li class="button__item">${delBtnMarkup}</li>
           <button class="trailer-btn trailer-btn--mtzero" type="button">watch trailer</button>
         </ul>
       </div>
@@ -237,12 +252,7 @@ function onDeleteFilm(filmId, modal, section) {
 
   const deleteWatchedClick = e => {
     e.preventDefault();
-    if (e.target.hasAttribute('js-disabled')) {
-      Notiflix.Notify.warning('🎬 Your film is not in the Watched');
-      return;
-    }
     storage.delFilmFromWatch(filmId);
-    btnWatched.setAttribute('js-disabled', '');
     const filmsToWatch = storage.getTwentyFromWatch();
     renderFilms(filmsToWatch, filmBoxRef);
     const paginationArr = pagination(
@@ -260,12 +270,7 @@ function onDeleteFilm(filmId, modal, section) {
 
   const deleteQueueClick = e => {
     e.preventDefault();
-    if (e.target.hasAttribute('js-disabled')) {
-      Notiflix.Notify.warning('🎬 Your film is not in the Queue');
-      return;
-    }
     storage.delFilmFromQueue(filmId);
-    btnQueue.setAttribute('js-disabled', '');
     const filmsToQueue = storage.getTwentyFromQueue();
     renderFilms(filmsToQueue, filmBoxRef);
     const paginationArr = pagination(
@@ -279,9 +284,6 @@ function onDeleteFilm(filmId, modal, section) {
       paginationUlRef.innerHTML = '';
     }
   };
-
-  if (!storage.checkWatched(filmId)) btnWatched.setAttribute('js-disabled', '');
-  if (!storage.checkQueue(filmId)) btnQueue.setAttribute('js-disabled', '');
 
   if (section == 'watch')
     btnWatched.addEventListener('click', deleteWatchedClick);
