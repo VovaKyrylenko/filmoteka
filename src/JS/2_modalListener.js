@@ -11,7 +11,7 @@ async function onContainerClick(evt) {
   if (evt.target.classList.contains('js-films-list')) {
     return;
   }
-
+  filmBoxRef.removeEventListener('click', onContainerClick);
   try {
     const filmId = Number(
       evt.target.closest('.movie_card').attributes.getNamedItem('js-id').value
@@ -21,7 +21,7 @@ async function onContainerClick(evt) {
       throw new Error('❌ Something go wrong, so we can`t load your film');
     const modal = createModal(renderModalMarcup(movie));
     modal.show();
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow = 'hidden';
     modalCloseByBackdropClick(modal);
     checkAndDisableButtons(filmId, movie);
 
@@ -92,7 +92,10 @@ function checkAndDisableButtons(filmId, movie) {
 function createModal(markup) {
   const modal = basicLightbox.create(markup, {
     onShow: modalCloseByEsc,
-    onClose: () => document.body.style.overflow = "",
+    onClose: () => {
+      document.body.style.overflow = '';
+      filmBoxRef.addEventListener('click', onContainerClick);
+    },
   });
 
   return modal;
@@ -173,7 +176,7 @@ function modalCloseByBackdropClick(instance) {
   modalBtn.addEventListener('click', onBackdropClick);
 }
 
-function modalCloseByEsc(instance) {
+export function modalCloseByEsc(instance) {
   const onPressEsc = e => {
     if (e.code !== 'Escape') return false;
     instance.close();
@@ -182,7 +185,7 @@ function modalCloseByEsc(instance) {
   document.addEventListener('keydown', onPressEsc);
 }
 
-function createModalForTrailer(markup) {
+export function createModalForTrailer(markup) {
   const trailerModal = basicLightbox.create(markup, {
     onShow: modalCloseByEsc,
   });

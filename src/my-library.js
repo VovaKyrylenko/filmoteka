@@ -2,7 +2,6 @@ import * as basicLightbox from 'basiclightbox';
 import { API } from './JS/service';
 import { filmBoxRef, listButton } from './JS/helpers';
 import { storage } from './JS/localStorage';
-import { renderFilms } from './JS/renderFunctions';
 import {
   renderFilms,
   pagination,
@@ -21,8 +20,6 @@ function onClick(evt) {
     spiner.start();
     const films = storage.getTwentyFromWatch();
     if (films.length === 0) {
-      const paginationUlRef = document.querySelector('.pagination');
-      paginationUlRef.innerHTML = '';
       filmBoxRef.innerHTML = '';
       spiner.stop();
       return;
@@ -33,16 +30,12 @@ function onClick(evt) {
       storage.getMaxWatch()
     );
     renderPagination(paginationArr, filmBoxRef, listClickHandlerWatch);
-    filmBoxRef.addEventListener('click', e => {
-      onContainerClick(e, 'watch');
-    });
+    filmBoxRef.addEventListener('click', onContainerClickWatch);
     spiner.stop();
   } else if (evt.target.classList.contains('js-queue')) {
     spiner.start();
     const films = storage.getTwentyFromWatch();
     if (films.length === 0) {
-      const paginationUlRef = document.querySelector('.pagination');
-      paginationUlRef.innerHTML = '';
       filmBoxRef.innerHTML = '';
       spiner.stop();
       return;
@@ -53,18 +46,25 @@ function onClick(evt) {
       storage.getMaxQueue()
     );
     renderPagination(paginationArr, filmBoxRef, listClickHandlerQueue);
-    filmBoxRef.addEventListener('click', e => {
-      onContainerClick(e, 'watch');
-    });
+    filmBoxRef.addEventListener('click', onContainerClickQueue);
     spiner.stop();
   } else return;
+}
+
+function onContainerClickWatch(e) {
+  onContainerClick(e, 'watch');
+}
+
+function onContainerClickQueue(e) {
+  onContainerClick(e, 'queue');
 }
 
 async function onContainerClick(evt, section) {
   if (evt.target.classList.contains('js-films-list')) {
     return;
   }
-
+  filmBoxRef.removeEventListener('click', onContainerClickWatch);
+  filmBoxRef.removeEventListener('click', onContainerClickQueue);
   try {
     const filmId = Number(
       evt.target.closest('.movie_card').attributes.getNamedItem('js-id').value
@@ -72,7 +72,7 @@ async function onContainerClick(evt, section) {
     const movie = await API.fetchById(filmId);
     if (!movie)
       throw new Error('❌ Something go wrong, so we can`t load your film');
-    const modal = createModal(renderModalMarcup(movie, section));
+    const modal = createModal(renderModalMarcup(movie, section), section);
     modal.show();
     modalCloseByBackdropClick(modal);
     onDeleteFilm(filmId, modal, section);
@@ -106,9 +106,14 @@ async function onContainerClick(evt, section) {
   }
 }
 
-function createModal(markup) {
+function createModal(markup, section) {
   const modal = basicLightbox.create(markup, {
     onShow: modalCloseByEsc,
+    onClose: instance => {
+      if (section == 'watch')
+        filmBoxRef.addEventListener('click', onContainerClickWatch);
+      else filmBoxRef.addEventListener('click', onContainerClickQueue);
+    },
   });
 
   return modal;
@@ -174,8 +179,8 @@ function renderModalMarcup(
                     : '<button class="movie__to-queue" type="button">Delete from Queue</button>'
                 }
           </li>
+          <button class="trailer-btn trailer-btn--mtzero" type="button">watch trailer</button>
         </ul>
-        <button class="trailer-btn" type="button">watch trailer</button>
       </div>
     </div>
   </div>`;
