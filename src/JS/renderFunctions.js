@@ -198,7 +198,6 @@ export function renderPagination(paginationArr, filmBoxRef) {
 
 function checkCurrentPage(evt) {
   const navListRef = document.querySelector('.nav__list');
-  console.log('XXX', navListRef);
   const el = [...navListRef.children].find(li => {
     if (li.firstElementChild.classList.contains('current')) {
       return li;
