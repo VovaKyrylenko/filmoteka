@@ -19,13 +19,6 @@ listButton.addEventListener('click', onClick);
 function onClick(evt) {
   if (evt.target.classList.contains('js-watched')) {
     spiner.start();
-    const filmListData = storage.getTwentyFromWatch();
-    renderFilms(filmListData, filmBoxRef);
-    const paginationArr = pagination(storage.getPage(), storage.getMax());
-    renderPagination(paginationArr, filmBoxRef);
-    spiner.stop();
-  }
-  if (evt.target.classList.contains('js-queue')) {
     const films = storage.getTwentyFromWatch();
     if (films.length === 0) {
       const paginationUlRef = document.querySelector('.pagination');
@@ -40,16 +33,18 @@ function onClick(evt) {
       storage.getMaxWatch()
     );
     renderPagination(paginationArr, filmBoxRef, listClickHandlerWatch);
+    filmBoxRef.addEventListener('click', e => {
+      onContainerClick(e, 'watch');
+    });
     spiner.stop();
-    filmBoxRef.addEventListener('click', onContainerClick);
   } else if (evt.target.classList.contains('js-queue')) {
     spiner.start();
-    const films = storage.getTwentyFromQueue();
+    const films = storage.getTwentyFromWatch();
     if (films.length === 0) {
-      spiner.stop();
       const paginationUlRef = document.querySelector('.pagination');
       paginationUlRef.innerHTML = '';
       filmBoxRef.innerHTML = '';
+      spiner.stop();
       return;
     }
     renderFilms(films, filmBoxRef);
@@ -58,12 +53,14 @@ function onClick(evt) {
       storage.getMaxQueue()
     );
     renderPagination(paginationArr, filmBoxRef, listClickHandlerQueue);
+    filmBoxRef.addEventListener('click', e => {
+      onContainerClick(e, 'watch');
+    });
     spiner.stop();
-    filmBoxRef.addEventListener('click', onContainerClick);
   } else return;
 }
 
-async function onContainerClick(evt) {
+async function onContainerClick(evt, section) {
   if (evt.target.classList.contains('js-films-list')) {
     return;
   }
@@ -75,10 +72,10 @@ async function onContainerClick(evt) {
     const movie = await API.fetchById(filmId);
     if (!movie)
       throw new Error('❌ Something go wrong, so we can`t load your film');
-    const modal = createModal(renderModalMarcup(movie));
+    const modal = createModal(renderModalMarcup(movie, section));
     modal.show();
     modalCloseByBackdropClick(modal);
-    onDeleteFilm(filmId, modal);
+    onDeleteFilm(filmId, modal, section);
 
     // Отримую доступ до кнопки показу трейлеру та приховую її
     const trailerBtnRef = document.querySelector('.trailer-btn');
@@ -117,15 +114,18 @@ function createModal(markup) {
   return modal;
 }
 
-function renderModalMarcup({
-  poster_path,
-  original_title,
-  vote_average,
-  vote_count,
-  popularity,
-  genres,
-  overview,
-}) {
+function renderModalMarcup(
+  {
+    poster_path,
+    original_title,
+    vote_average,
+    vote_count,
+    popularity,
+    genres,
+    overview,
+  },
+  section
+) {
   return `
   <div class="modal">
     <button class="button__modal" type="button">
@@ -168,12 +168,11 @@ function renderModalMarcup({
         </p>
         <ul class="button__list">
           <li class="button__item">
-            <button class="movie__to-watched" type="button">
-              Delete from Watched
-            </button>
-          </li>
-          <li class="button__item">
-            <button class="movie__to-queue" type="button">Delete from Queue</button>
+                ${
+                  section == 'watch'
+                    ? '<button class="movie__to-watched" type="button">Delete from Watched</button>'
+                    : '<button class="movie__to-queue" type="button">Delete from Queue</button>'
+                }
           </li>
         </ul>
         <button class="trailer-btn" type="button">watch trailer</button>
@@ -219,7 +218,7 @@ function renderVideo({ key }) {
   <button type="button" class="button__trailer--close"></button>`;
 }
 
-function onDeleteFilm(filmId, modal) {
+function onDeleteFilm(filmId, modal, section) {
   const btnWatched = document.querySelector('.movie__to-watched');
   const btnQueue = document.querySelector('.movie__to-queue');
 
@@ -271,6 +270,8 @@ function onDeleteFilm(filmId, modal) {
   if (!storage.checkWatched(filmId)) btnWatched.setAttribute('js-disabled', '');
   if (!storage.checkQueue(filmId)) btnQueue.setAttribute('js-disabled', '');
 
-  btnWatched.addEventListener('click', deleteWatchedClick);
-  btnQueue.addEventListener('click', deleteQueueClick);
+  if (section == 'watch')
+    btnWatched.addEventListener('click', deleteWatchedClick);
+  else if (section == 'queue')
+    btnQueue.addEventListener('click', deleteQueueClick);
 }
