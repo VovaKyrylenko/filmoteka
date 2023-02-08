@@ -149,3 +149,66 @@ class FilmsLocalStorage {
 }
 
 export const storage = new FilmsLocalStorage();
+
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import 'firebase/compat/firestore';
+
+import { initializeApp } from 'firebase/app';
+
+
+import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
+
+
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyCoCV-uT6m4zkhe8p5jJA8T8Quk2bX8xX8",
+  authDomain: "filmoteka-b315b.firebaseapp.com",
+  projectId: "filmoteka-b315b",
+  storageBucket: "filmoteka-b315b.appspot.com",
+  messagingSenderId: "903917604658",
+  appId: "1:903917604658:web:0382307da84868e996912b",
+  measurementId: "G-WMMJWSVNYB"
+};
+
+const app = firebase.initializeApp(firebaseConfig);
+
+
+const provider = new GoogleAuthProvider();
+
+
+function signinUser() {
+    const googleAuthProvider = new firebase.auth.GoogleAuthProvider;
+    firebase.auth().signInWithPopup(googleAuthProvider)
+        .then(function (data){
+          //console.log(data)
+          document.getElementById('signin').classList.add('signOut');
+          document.getElementById('signout').classList.add('signIn');
+          document.getElementById('googleUser').style.display = "block";
+            renderGoogleUser(data);
+        })
+        .catch(function(error){
+            console.log(error)
+        })
+    }
+
+function signoutUser(){
+    firebase.auth().signOut().then(() => {
+        //console.log("Sign - out successful.");
+        document.getElementById('signin').classList.remove('signOut');
+      document.getElementById('signout').classList.remove('signIn');
+      document.getElementById('googleUser').style.display = "none";
+    }).catch(error => {
+          console.log(error)
+        })
+      }
+
+
+      function renderGoogleUser(data){
+          document.getElementById('googleUser').innerHTML = `
+          <img class="user-img" src="${data.user.photoURL}">
+        `
+}
+
+const login = document.getElementById('signin').addEventListener('click', signinUser);
+const logout = document.getElementById('signout').addEventListener('click', signoutUser)
