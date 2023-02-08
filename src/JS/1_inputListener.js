@@ -14,7 +14,7 @@ import Notiflix from 'notiflix';
   const popularFilmsList = await API.fetchPopularMovies();
   renderFilms(popularFilmsList, filmBoxRef);
   const paginationArr = pagination(API.getPage(), API.getMax());
-  renderPagination(paginationArr, filmBoxRef, listClickHandlerMain);
+  renderPagination(paginationArr, filmBoxRef);
   spiner.stop();
 })();
 
@@ -32,7 +32,7 @@ async function onSubmit(e) {
     }
     renderFilms(filmListData, filmBoxRef);
     const paginationArr = pagination(API.getPage(), API.getMax());
-    renderPagination(paginationArr, filmBoxRef, listClickHandlerMain);
+    renderPagination(paginationArr, filmBoxRef);
     spiner.stop();
   }
 }

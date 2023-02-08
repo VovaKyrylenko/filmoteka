@@ -1,5 +1,5 @@
 import { genreInfo } from './helpers';
-import { filmBoxRef } from './helpers';
+import { filmBoxRef, listButton } from './helpers';
 import { API } from './service';
 import { storage } from './localStorage';
 
@@ -8,28 +8,36 @@ export function renderFilms(movies, movieListEl) {
 
   movieListEl.innerHTML = movies
     .map(movie => {
-      let genres = [];
-      if (movie.genre_ids) {
-        genresIds = movie.genre_ids;
-        // створення списку жанрів
-        const genresList = [];
-        if (genresIds.length > 3) {
-          genresIds = genresIds.slice(0, 2);
-          genresIds.push(9999);
-        }
-        genresIds.length
-          ? genresIds.forEach(el => {
-              elem = genresInfo.genres.find(opt => opt.id === el).name;
-              genresList.push(elem);
-            })
-          : genresList.push('Another genre');
-        genres = genresList.join(', ');
-      } else if (movie.genres) {
-        if (!movie.genres.length) genres.push('Another genre');
-        genres = movie.genres.map(el => el.name);
-        if (genres.length > 3) genres = genres.slice(0, 2);
-        genres = genres.join(', ');
+      // let genres = [];
+      // if (movie.genre_ids)
+      //   genresIds = movie.genre_ids;
+
+      // додаю
+      let genresIds = movie.genre_ids ? movie.genre_ids : movie.genres;
+      // додала
+
+      // створення списку жанрів
+      const genresList = [];
+      if (genresIds.length > 3) {
+        genresIds = genresIds.slice(0, 2);
+        genresIds.push(9999);
       }
+      genresIds.length
+        ? genresIds.forEach(el => {
+            // додаю
+            el = typeof el === 'number' ? el : el.id;
+            // додала
+            elem = genresInfo.genres.find(opt => opt.id === el).name;
+            genresList.push(elem);
+          })
+        : genresList.push('Another genre');
+      genres = genresList.join(', ');
+      // } else if (movie.genres) {
+      //   if (!movie.genres.length) genres.push('Another genre');
+      //   genres = movie.genres.map(el => el.name);
+      //   if (genres.length > 3) genres = genres.slice(0, 2);
+      //   genres = genres.join(', ');
+      // }
       // створення url постерів
       const imgUrl = movie.poster_path
         ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
@@ -117,7 +125,7 @@ export function pagination(activePage, totalPages) {
   return result;
 }
 
-export function renderPagination(paginationArr, filmBoxRef, callback) {
+export function renderPagination(paginationArr, filmBoxRef) {
   const paginationUl = `<ul class="pagination"></ul>`;
   let paginationUlRef = document.querySelector('.pagination');
   if (paginationUlRef) {
@@ -183,7 +191,25 @@ export function renderPagination(paginationArr, filmBoxRef, callback) {
     }
   });
 
-  paginationUlRef.addEventListener('click', callback);
+  paginationUlRef.addEventListener('click', checkCurrentPage);
+}
+
+function checkCurrentPage(evt) {
+  const navListRef = document.querySelector('.nav__list');
+  const el = [...navListRef.children].find(li => {
+    if (li.children[0].classList.contains('current')) {
+      return li;
+    }
+  });
+  if (el.textContent === 'HOME') {
+    return listClickHandlerMain(evt);
+  }
+  if (filmBoxRef.dataset.id === 'watch-gallery') {
+    return listClickHandlerWatch(evt);
+  }
+  if (filmBoxRef.dataset.id === 'queue-gallery') {
+    return listClickHandlerQueue(evt);
+  }
 }
 
 export function listClickHandlerMain(event) {
