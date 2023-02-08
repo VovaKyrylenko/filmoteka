@@ -27,14 +27,14 @@ async function onContainerClick(evt) {
 
     // Отримую доступ до кнопки показу трейлеру та приховую її
     const trailerBtnRef = document.querySelector('.trailer-btn');
-    trailerBtnRef.hidden = true;
+    trailerBtnRef.style.display = 'none';
 
     // У відповіді від сервера отримую інфо, чи є по обраному фільму масив з відео, а також перевіряю наявність саме трейлеру
     const videos = movie.videos.results;
     if (videos.length > 0) {
       videos.every(video => !video.type.includes('Trailer'))
-        ? (trailerBtnRef.hidden = true)
-        : (trailerBtnRef.hidden = false);
+        ? (trailerBtnRef.style.display = 'none')
+        : (trailerBtnRef.style.display = 'block');
     }
 
     // Додаю слухач на кнопку трейлера, колбек ф-я якої одразу створює модалку з трейлером та показує її
