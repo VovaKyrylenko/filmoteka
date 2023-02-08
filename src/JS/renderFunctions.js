@@ -125,14 +125,14 @@ export function renderPagination(paginationArr, filmBoxRef, callback) {
 
   const leftArrowMarkup = `
     <li class="pagination__item item-left-arrow">
-      <a href="" class="pagination__left-arrow pagination__link">
-      </a>
+      <button  class="pagination__left-arrow pagination__link" aria-label="left-arrow">
+      </button>
     </li>
   `;
   const rightArrowMarkup = `
     <li class="pagination__right-arrow pagination__item item-right-arrow"">
-      <a href="" class="pagination__right-arrow pagination__link" data="rightArrow">
-      </a>
+      <button  class="pagination__right-arrow pagination__link" data="rightArrow" aria-label="right-arrow>
+      </button>
     </li>
   `;
 
@@ -152,14 +152,14 @@ export function renderPagination(paginationArr, filmBoxRef, callback) {
       paginationUlRef.insertAdjacentHTML(
         'beforeend',
         `<li class="pagination__item pagination__item--isActive"> 
-        <a href="" class="pagination__link">${updatedPageName}</a>
+        <button  class="pagination__link" aria-label="pagination-item>${updatedPageName}</button>
         </li>`
       );
     } else if (page === '...') {
       paginationUlRef.insertAdjacentHTML(
         'beforeend',
-        `<li class="pagination__item pagination__item--desktop pagination__item--dots">
-            <a href="" class="pagination__link">${page}</a>
+        `<li class="pagination__item pagination__item--desktop pagination__item--dots" >
+            <button class="pagination__link" aria-label="pagination-link">${page}</button>
           </li>
         `
       );
@@ -167,14 +167,14 @@ export function renderPagination(paginationArr, filmBoxRef, callback) {
       paginationUlRef.insertAdjacentHTML(
         'beforeend',
         `<li class="pagination__item pagination__item--desktop">
-        <a href="" class="pagination__link">${page}</a>
+        <button class="pagination__link" aria-label="pagination-link">${page}</button>
         </li>
         `
       );
     } else {
       paginationUlRef.insertAdjacentHTML(
         'beforeend',
-        `<li class="pagination__item"><a href="" class="pagination__link">${page}</a></li>`
+        `<li class="pagination__item"><button class="pagination__link" aria-label="pagination-link">${page}</button></li>`
       );
     }
   });
