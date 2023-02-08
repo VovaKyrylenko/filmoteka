@@ -15,6 +15,7 @@ import Notiflix from 'notiflix';
 
 async function onSubmit(e) {
   e.preventDefault();
+  API.resetPage();
   const value = e.target[0].value;
   if (value) {
     spiner.start();
