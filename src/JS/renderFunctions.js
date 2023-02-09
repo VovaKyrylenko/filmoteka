@@ -1,41 +1,31 @@
 import { genreInfo } from './helpers';
-import { filmBoxRef, listButton } from './helpers';
+import { filmBoxRef } from './helpers';
 import { API } from './service';
 import { storage } from './localStorage';
 
 export function renderFilms(movies, movieListEl) {
-  const genresInfo = JSON.parse(genreInfo);
-
   movieListEl.innerHTML = movies
     .map(movie => {
-      // let genres = [];
-      // if (movie.genre_ids)
-      //   genresIds = movie.genre_ids;
-
-      // додаю
-      let genresIds = movie.genre_ids ? movie.genre_ids : movie.genres;
-      // додала
-
-      // створення списку жанрів
-      const genresList = [];
-      if (genresIds.length > 3) {
-        genresIds = genresIds.slice(0, 2);
-        genresIds.push(9999);
+      let genresList;
+      // Перевірка на існування жанрів
+      if (movie.genre_ids) {
+        if (movie.genre_ids.length > 3) {
+          genresList = parseGenres(movie.genre_ids).slice(0, 2);
+          genresList.push('Other');
+        } else {
+          genresList = parseGenres(movie.genre_ids);
+        }
+      } else if (movie.genres) {
+        if (movie.genres.length > 3) {
+          genresList = movie.genres.slice(0, 2);
+          genresList.push('Other');
+        } else {
+          genresList = movie.genres;
+        }
+      } else {
+        genresList = ['Another genre'];
       }
-      genresIds.length
-        ? genresIds.forEach(el => {
-            // додаю
-            el = typeof el === 'number' ? el : el.id;
-            // додала
-            genresList.push(genresInfo.genres.find(opt => opt.id === el).name);
-          })
-        : genresList.push('Another genre');
-      // } else if (movie.genres) {
-      //   if (!movie.genres.length) genres.push('Another genre');
-      //   genres = movie.genres.map(el => el.name);
-      //   if (genres.length > 3) genres = genres.slice(0, 2);
-      //   genres = genres.join(', ');
-      // }
+
       // створення url постерів
       const imgUrl = movie.poster_path
         ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
@@ -63,6 +53,19 @@ export function renderFilms(movies, movieListEl) {
                 </li>`;
     })
     .join('');
+}
+
+function parseGenres(genresIds) {
+  const genresInfo = JSON.parse(genreInfo);
+  let genresLists = [];
+  genresIds.length
+    ? genresIds.forEach(genre => {
+        genresLists.push(
+          genresInfo.genres.find(ganreInfo => ganreInfo.id === genre).name
+        );
+      })
+    : genresLists.push('Another genre');
+  return genresLists;
 }
 
 export function pagination(activePage, totalPages) {
