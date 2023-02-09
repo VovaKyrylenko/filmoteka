@@ -27,8 +27,7 @@ export function renderFilms(movies, movieListEl) {
             // додаю
             el = typeof el === 'number' ? el : el.id;
             // додала
-            elem = genresInfo.genres.find(opt => opt.id === el).name;
-            genresList.push(elem);
+            genresList.push(genresInfo.genres.find(opt => opt.id === el).name);
           })
         : genresList.push('Another genre');
       genres = genresList.join(', ');
