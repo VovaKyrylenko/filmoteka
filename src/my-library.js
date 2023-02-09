@@ -319,7 +319,7 @@ function onDeleteFilm(filmId, modal, section) {
       const paginationUlRef = document.querySelector('.pagination');
       paginationUlRef.innerHTML = '';
       filmBoxRef.innerHTML =
-        '<div style="margin-top: -60px; width: 100%;"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJI_dlTsblb8ypQy_aqxxFpLE29DiCHLcQpC5X9JvayT3W3PVLuWGSWVX1TUfCGubH_BI&usqp=CAU" style="width: 100%; object-fit: cover;"></div>';
+        '<div style="width: 100%;"><img src="https://myron5.github.io/goit-js-hw-07/img-watch.jpg" style="width: 100%; object-fit: cover;"></div>';
       Notiflix.Notify.warning("🙈 You haven't watched films");
     }
   };
@@ -339,7 +339,7 @@ function onDeleteFilm(filmId, modal, section) {
       const paginationUlRef = document.querySelector('.pagination');
       paginationUlRef.innerHTML = '';
       filmBoxRef.innerHTML =
-        '<div style="margin-top: -60px; width: 100%;"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJI_dlTsblb8ypQy_aqxxFpLE29DiCHLcQpC5X9JvayT3W3PVLuWGSWVX1TUfCGubH_BI&usqp=CAU" style="width: 100%; object-fit: cover;"></div>';
+        '<div style="width: 100%;"><img src="https://myron5.github.io/goit-js-hw-07/img-queue.jpg" style="width: 100%; object-fit: cover;"></div>';
       Notiflix.Notify.warning("🗃 You haven't queued films");
     }
   };

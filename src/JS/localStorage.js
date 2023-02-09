@@ -147,3 +147,5 @@ class FilmsLocalStorage {
     return this.maxQueue;
   }
 }
+
+export const storage = new FilmsLocalStorage();
