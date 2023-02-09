@@ -30,7 +30,6 @@ export function renderFilms(movies, movieListEl) {
             genresList.push(genresInfo.genres.find(opt => opt.id === el).name);
           })
         : genresList.push('Another genre');
-      genres = genresList.join(', ');
       // } else if (movie.genres) {
       //   if (!movie.genres.length) genres.push('Another genre');
       //   genres = movie.genres.map(el => el.name);
@@ -53,9 +52,13 @@ export function renderFilms(movies, movieListEl) {
                 <div class="img__thumb" style="background-image:url(${imgUrl})"></div>
                     <p class="movie_card_title">${movie.original_title}</p>
                     <div class="movie_card_desc">
-                        <p class="movie_card_ganres">${genres}</p>
+                        <p class="movie_card_ganres">${genresList.join(
+                          ', '
+                        )}</p>
                         <p class="movie_card_year">| ${date}</p>
-                        <span class="movie_card_rating">${movie.vote_average}</span>
+                        <span class="movie_card_rating">${
+                          movie.vote_average
+                        }</span>
                         </div>
                 </li>`;
     })
