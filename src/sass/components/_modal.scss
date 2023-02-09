@@ -71,7 +71,9 @@
   }
 
   &__to-watched,
-  &__to-queue {
+  &__to-queue,
+  &__watched,
+  &__queue {
     font-family: 'Roboto';
     font-style: normal;
     width: 110px;
@@ -101,7 +103,9 @@
   }
 
   &__to-watched[js-disabled],
-  &__to-queue[js-disabled] {
+  &__to-queue[js-disabled],
+  &__watched[js-disabled],
+  &__queue[js-disabled] {
     display: flex;
     justify-content: center;
     min-width: 110px;
@@ -287,7 +291,7 @@
   padding: 12px 8px;
 
   &--mtzero {
-    margin-top: 0;
+    margin-top: 15px;
   }
 
   @include desktop() {
