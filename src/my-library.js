@@ -34,7 +34,7 @@ function onClick(evt) {
     const films = storage.getTwentyFromWatch();
     if (films.length === 0) {
       filmBoxRef.innerHTML =
-        '<div style="margin-top: -60px; width: 100%;"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJI_dlTsblb8ypQy_aqxxFpLE29DiCHLcQpC5X9JvayT3W3PVLuWGSWVX1TUfCGubH_BI&usqp=CAU" style="width: 100%; object-fit: cover;"></div>';
+        '<div style="width: 100%;"><img src="https://myron5.github.io/goit-js-hw-07/img-watch.jpg" style="width: 100%; object-fit: cover;"></div>';
       Notiflix.Notify.warning("🙈 You haven't watched films");
       spiner.stop();
       return;
@@ -55,7 +55,7 @@ function onClick(evt) {
     const films = storage.getTwentyFromQueue();
     if (films.length === 0) {
       filmBoxRef.innerHTML =
-        '<div style="margin-top: -60px; width: 100%;"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJI_dlTsblb8ypQy_aqxxFpLE29DiCHLcQpC5X9JvayT3W3PVLuWGSWVX1TUfCGubH_BI&usqp=CAU" style="width: 100%; object-fit: cover;"></div>';
+        '<div style="width: 100%;"><img src="https://myron5.github.io/goit-js-hw-07/img-queue.jpg" style="width: 100%; object-fit: cover;"></div>';
       Notiflix.Notify.warning("🗃 You haven't queued films");
       spiner.stop();
       return;
@@ -99,6 +99,7 @@ async function onContainerClick(evt, section) {
     modal.show();
     modalCloseByBackdropClick(modal);
     onDeleteFilm(filmId, modal, section);
+    checkAndDisableButtons(filmId, movie, section);
 
     // Отримую доступ до кнопки показу трейлеру та приховую її
     const trailerBtnRef = document.querySelector('.trailer-btn');
@@ -155,13 +156,18 @@ function renderModalMarcup(
   section
 ) {
   let delBtnMarkup = '';
-  if (section == 'queue')
+  let addBtnMarkup = '';
+  if (section == 'queue') {
     delBtnMarkup =
       '<button class="movie__to-queue" type="button">Delete from Queue</button>';
-  else if (section == 'watch')
+    addBtnMarkup =
+      '<button class="movie__watched" type="button">add to Watched</button>';
+  } else if (section == 'watch') {
     delBtnMarkup =
       '<button class="movie__to-watched" type="button">Delete from Watched</button>';
-
+    addBtnMarkup =
+      '<button class="movie__queue" type="button">add to queue</button>';
+  }
   return `
   <div class="modal">
     <button class="button__modal" type="button">
@@ -204,11 +210,57 @@ function renderModalMarcup(
         </p>
         <ul class="button__list">
           <li class="button__item">${delBtnMarkup}</li>
-          <button class="trailer-btn trailer-btn--mtzero" type="button">watch trailer</button>
+          <li class="button__item">${addBtnMarkup}</li>
         </ul>
+        <button class="trailer-btn trailer-btn--mtzero" type="button">watch trailer</button>
       </div>
     </div>
   </div>`;
+}
+
+function checkAndDisableButtons(filmId, movie, section) {
+  const btnWatched = document.querySelector('.movie__watched');
+  const btnQueue = document.querySelector('.movie__queue');
+
+  const setWatchedClick = e => {
+    e.preventDefault();
+    if (e.target.hasAttribute('js-disabled')) {
+      Notiflix.Notify.warning(
+        '🎬 Your film has already sucessfully been added'
+      );
+      return;
+    }
+    storage.addFilmToWatch(movie);
+    btnWatched.textContent = 'Moved to Watched';
+    btnWatched.setAttribute('js-disabled', '');
+  };
+
+  const setQueueClick = e => {
+    e.preventDefault();
+    if (e.target.hasAttribute('js-disabled')) {
+      Notiflix.Notify.warning(
+        '🎬 Your film has already sucessfully been added'
+      );
+      return;
+    }
+    storage.addFilmToQueue(movie);
+    btnQueue.textContent = 'Moved to Queue';
+    btnQueue.setAttribute('js-disabled', '');
+  };
+
+  if (section == 'watch') {
+    if (storage.checkQueue(filmId)) {
+      btnQueue.textContent = 'Moved to Queue';
+      btnQueue.setAttribute('js-disabled', '');
+    }
+    btnQueue.addEventListener('click', setQueueClick);
+  } else if (section == 'queue') {
+    if (storage.checkWatched(filmId)) {
+      btnWatched.textContent = 'Moved to Watched';
+      btnWatched.setAttribute('js-disabled', '');
+    }
+    btnWatched.addEventListener('click', setWatchedClick);
+  }
 }
 
 function modalCloseByBackdropClick(instance) {
@@ -266,7 +318,9 @@ function onDeleteFilm(filmId, modal, section) {
     if (filmsToWatch.length === 0) {
       const paginationUlRef = document.querySelector('.pagination');
       paginationUlRef.innerHTML = '';
-      filmBoxRef.innerHTML = '';
+      filmBoxRef.innerHTML =
+        '<div style="margin-top: -60px; width: 100%;"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJI_dlTsblb8ypQy_aqxxFpLE29DiCHLcQpC5X9JvayT3W3PVLuWGSWVX1TUfCGubH_BI&usqp=CAU" style="width: 100%; object-fit: cover;"></div>';
+      Notiflix.Notify.warning("🙈 You haven't watched films");
     }
   };
 
@@ -284,6 +338,9 @@ function onDeleteFilm(filmId, modal, section) {
     if (filmsToQueue.length === 0) {
       const paginationUlRef = document.querySelector('.pagination');
       paginationUlRef.innerHTML = '';
+      filmBoxRef.innerHTML =
+        '<div style="margin-top: -60px; width: 100%;"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJI_dlTsblb8ypQy_aqxxFpLE29DiCHLcQpC5X9JvayT3W3PVLuWGSWVX1TUfCGubH_BI&usqp=CAU" style="width: 100%; object-fit: cover;"></div>';
+      Notiflix.Notify.warning("🗃 You haven't queued films");
     }
   };
 
