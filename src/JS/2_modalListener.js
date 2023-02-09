@@ -1,4 +1,4 @@
-import * as basicLightbox from 'basiclightbox';
+import basicLightbox from 'basiclightbox';
 import { API } from './service';
 import { filmBoxRef } from './helpers';
 import { storage } from './localStorage.js';
