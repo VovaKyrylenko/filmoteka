@@ -1,5 +1,6 @@
-.library__back {
+.header-my-library {
   background-image: url('../images/header/header-my-d.jpeg');
+
   @include mobile() {
     background-image: url('../images/header/header-m-m.jpeg');
   }
@@ -7,6 +8,20 @@
   @include tablet() {
     background-image: url('../images/header/header-my-t.jpeg');
   }
+
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+
+
+  margin: auto;
+  padding-top: 40px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.header-my-library .container {
+  height: 230px;
 }
 
 .buttons {
