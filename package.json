@@ -23,7 +23,8 @@
     "basiclightbox": "^5.0.4",
     "firebase": "^9.17.1",
     "modern-normalize": "^1.1.0",
-    "notiflix": "^3.2.6"
+    "notiflix": "^3.2.6",
+    "regenerator-runtime": "^0.13.11"
   },
   "devDependencies": {
     "@parcel/transformer-sass": "^2.6.0",
