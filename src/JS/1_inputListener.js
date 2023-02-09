@@ -22,6 +22,8 @@ async function onSubmit(e) {
     API.setSearchQuery(value);
     const filmListData = await API.fetchKeyword();
     if (!filmListData.length) {
+      filmBoxRef.innerHTML =
+        '<div style="width: 100%;"><img src="https://myron5.github.io/goit-js-hw-07/img-keyword.jpg" style="width: 100%; object-fit: cover;"></div>';
       Notiflix.Notify.warning('💔 Sorry but we can`t find films for this word');
       spiner.stop();
       return;
