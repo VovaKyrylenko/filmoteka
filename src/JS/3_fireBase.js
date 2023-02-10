@@ -2,6 +2,7 @@
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
+import { storage } from './localStorage';
 
 import { initializeApp } from 'firebase/app';
 
@@ -34,37 +35,69 @@ const logout = document
 // const provider = new GoogleAuthProvider();
 
 function signinUser() {
-  const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
-  firebase
-    .auth()
-    .signInWithPopup(googleAuthProvider)
-    .then(function (data) {
-      document.getElementById('signin').classList.add('close');
-      document.getElementById('signout').classList.remove('close');
-      document.getElementById('googleUser').style.display = 'block';
-      renderGoogleUser(data);
-      sessionStorage.setItem('email', data.user.email);
-      document.querySelector('.firebases').insertAdjacentHTML("beforebegin", '<li><a class="nav__link nav__link--library" href="my-library.html">MY LIBRARY</a></li>')
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
+  const { photo } = JSON.parse(localStorage.getItem('account'));
+  if (!photo) {
+    const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
+    firebase
+      .auth()
+      .signInWithPopup(googleAuthProvider)
+      .then(function (data) {
+        document.getElementById('signin').classList.add('close');
+        document.getElementById('signout').classList.remove('close');
+        document.getElementById('googleUser').style.display = 'block';
+        renderGoogleUser(data);
+        document
+          .querySelector('.firebases')
+          .insertAdjacentHTML(
+            'beforebegin',
+            '<li><a class="nav__link nav__link--library" href="my-library.html">MY LIBRARY</a></li>'
+          );
+        localStorage.setItem(
+          'account',
+          JSON.stringify({ email: data.user.email, photo: data.user.photoURL })
+        );
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  } else {
+    document.getElementById('signin').classList.add('close');
+    document.getElementById('signout').classList.remove('close');
+    document.getElementById('googleUser').style.display = 'block';
+    renderGoogleUser(photo);
+    document
+      .querySelector('.firebases')
+      .insertAdjacentHTML(
+        'beforebegin',
+        '<li><a class="nav__link nav__link--library" href="my-library.html">MY LIBRARY</a></li>'
+      );
+  }
 }
 
 function signoutUser() {
-  firebase
-    .auth()
-    .signOut()
-    .then(() => {
-      //console.log("Sign - out successful.");
-      document.getElementById('signin').classList.remove('close');
-      document.getElementById('signout').classList.add('close');
-      document.getElementById('googleUser').style.display = 'none';
-      document.querySelector('.nav__link--library').remove();
-    })
-    .catch(error => {
-      console.log(error);
-    });
+  const account = JSON.parse(localStorage.getItem('account'));
+  if (!account) {
+    const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
+    firebase
+      .auth()
+      .signOut()
+      .then(() => {
+        //console.log("Sign - out successful.");
+        document.getElementById('signin').classList.remove('close');
+        document.getElementById('signout').classList.add('close');
+        document.getElementById('googleUser').style.display = 'none';
+        document.querySelector('.nav__link--library').remove();
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  } else {
+    localStorage.removeItem('account');
+    document.getElementById('signin').classList.remove('close');
+    document.getElementById('signout').classList.add('close');
+    document.getElementById('googleUser').style.display = 'none';
+    document.querySelector('.nav__link--library').remove();
+  }
 }
 
 function renderGoogleUser(data) {
