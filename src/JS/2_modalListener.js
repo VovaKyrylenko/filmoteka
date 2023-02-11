@@ -8,9 +8,8 @@ import 'basiclightbox/dist/basicLightbox.min.css';
 filmBoxRef.addEventListener('click', onContainerClick);
 
 async function onContainerClick(evt) {
-  if (evt.target.classList.contains('js-films-list')) {
-    return;
-  }
+  if (evt.target.classList.contains('js-films-list')) return;
+
   filmBoxRef.removeEventListener('click', onContainerClick);
   try {
     const filmId = Number(
@@ -58,6 +57,12 @@ function checkAndDisableButtons(filmId, movie) {
   const btnWatched = document.querySelector('.movie__to-watched');
   const btnQueue = document.querySelector('.movie__to-queue');
 
+  if (!storage.signIn) {
+    btnWatched.style.display = 'none';
+    btnQueue.style.display = 'none';
+    return;
+  }
+
   const setWatchedClick = e => {
     e.preventDefault();
     if (e.target.hasAttribute('js-disabled')) {
@@ -88,6 +93,7 @@ function checkAndDisableButtons(filmId, movie) {
     btnWatched.textContent = 'Moved to Watched';
     btnWatched.setAttribute('js-disabled', '');
   }
+
   if (storage.checkQueue(filmId)) {
     btnQueue.textContent = 'Moved to Queue';
     btnQueue.setAttribute('js-disabled', '');

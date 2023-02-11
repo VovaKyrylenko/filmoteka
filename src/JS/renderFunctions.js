@@ -20,7 +20,7 @@ export function renderFilms(movies, movieListEl) {
           genresList = movie.genres.slice(0, 2);
           genresList.push('Other');
         } else {
-          genresList = movie.genres;
+          genresList = movie.genres.map(genre => genre.name);
         }
       } else {
         genresList = ['Another genre'];
@@ -46,9 +46,9 @@ export function renderFilms(movies, movieListEl) {
                           ', '
                         )}</p>
                         <p class="movie_card_year">| ${date}</p>
-                        <span class="movie_card_rating">${
-                          movie.vote_average
-                        }</span>
+                        <span class="movie_card_rating">${movie.vote_average.toFixed(
+                          2
+                        )}</span>
                         </div>
                 </li>`;
     })

@@ -3,16 +3,19 @@ import Notiflix from 'notiflix';
 class FilmsLocalStorage {
   #WATCH_KEY;
   #QUEUE_KEY;
-  #BASE_URL;
 
   constructor() {
-    this.#BASE_URL = 'https://63e6a9c1c8839ccc285c63f3.mockapi.io';
+    this.resetConstructor();
+  }
 
+  resetConstructor() {
     this.pageWatch = 1;
     this.pageQueue = 1;
 
     this.#WATCH_KEY = 'films_to_watch';
     this.#QUEUE_KEY = 'films_to_queue';
+
+    this.signIn = true;
 
     let objToWatch = JSON.parse(localStorage.getItem(this.#WATCH_KEY));
     let objToQueue = JSON.parse(localStorage.getItem(this.#QUEUE_KEY));
@@ -20,33 +23,38 @@ class FilmsLocalStorage {
     if (!objToWatch) objToWatch = {};
     if (!objToQueue) objToQueue = {};
 
-    const { email } = JSON.parse(localStorage.get('account'));
-    if (!email) {
+    const account = JSON.parse(localStorage.getItem('account'));
+    if (!account) {
       Notiflix.Notify.warning('➡ You have to sign in first');
       console.log('➡ You have to sign in first');
+      this.signIn = false;
       return;
     }
 
-    this.email = email;
+    this.email = account.email;
 
     if (!Object.keys(objToWatch).length) {
       const newObj = {};
-      newObj[email] = [];
+      newObj[this.email] = [];
       localStorage.setItem(this.#WATCH_KEY, JSON.stringify(newObj));
       localStorage.setItem(this.#QUEUE_KEY, JSON.stringify(newObj));
       this.maxWatch = 0;
       this.maxQueue = 0;
     } else {
       const isEmailInStorage = Object.keys(objToWatch).some(
-        locEmail => locEmail == email
+        locEmail => locEmail == this.email
       );
       if (!isEmailInStorage) {
-        const filmsToWatchArr = objToWatch[email];
-        const filmsToQueuehArr = objToQueue[email];
-        this.maxWatch = Math.ceil(filmsToWatchArr.length / 20);
-        this.maxQueue = Math.ceil(filmsToQueuehArr.length / 20);
-      } else {
+        const newObj = {};
+        newObj[this.email] = [];
+        localStorage.setItem(this.#WATCH_KEY, JSON.stringify(newObj));
+        localStorage.setItem(this.#QUEUE_KEY, JSON.stringify(newObj));
       }
+
+      const filmsToWatchArr = objToWatch[this.email];
+      const filmsToQueuehArr = objToQueue[this.email];
+      this.maxWatch = Math.ceil(filmsToWatchArr.length / 20);
+      this.maxQueue = Math.ceil(filmsToQueuehArr.length / 20);
     }
   }
 
@@ -144,6 +152,10 @@ class FilmsLocalStorage {
 
   setPageQueue(value) {
     this.pageQueue = value;
+  }
+
+  setEmail(email) {
+    this.email = email;
   }
 
   getPageWatch() {

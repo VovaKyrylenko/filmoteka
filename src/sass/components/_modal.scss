@@ -60,15 +60,19 @@
   }
 
   &__about-description {
-    overflow: hidden;
+    min-width: 292px;
     max-height: 236px;
+
+    margin-bottom: 20px;
+
     font-family: 'Roboto';
     font-style: normal;
     font-weight: 500;
     font-size: 12px;
     line-height: calc(20 / 12);
     color: #000000;
-    margin-bottom: 20px;
+
+    overflow: hidden;
   }
 
   &__to-watched,
