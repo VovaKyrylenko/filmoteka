@@ -1,3 +1,7 @@
+.movie_card {
+  position: relative;
+}
+
 .movie_card_img {
   margin-bottom: 10px;
   width: 100%;
@@ -24,8 +28,6 @@
 //     // max-width: 336px;
 //   }
 // }
-
-
 
 // @media (min-width: 1200px) {
 //   .movie_card_img {
@@ -79,7 +81,6 @@
   @include desktop() {
     font-size: 20px;
     line-height: calc(24 / 20);
-
   }
 }
 
@@ -89,7 +90,6 @@
 //     line-height: calc(24 / 20);
 //   }
 // }
-
 
 // .movie_card_ganres::after {
 //   content: '';
@@ -121,17 +121,21 @@
   // }
 }
 
-
 .movie_card_rating {
   color: #ffff;
   background-color: #ff6b08;
   font-family: 'Roboto';
+
+  position: absolute;
+  top: 10px;
+  left: 10px;
 
   font-weight: 500;
   font-size: 12px;
   line-height: calc(16 / 12);
   padding: 1px 6px;
   text-transform: uppercase;
+  box-shadow: 0px 0px 40px -1px #ff6b08;
   border-radius: 5px;
 }
 
@@ -154,6 +158,6 @@
     margin-bottom: 12px;
   }
 }
-.movie_card{
+.movie_card {
   cursor: pointer;
 }

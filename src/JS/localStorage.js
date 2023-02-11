@@ -1,30 +1,61 @@
+import Notiflix from 'notiflix';
+
 class FilmsLocalStorage {
   #WATCH_KEY;
   #QUEUE_KEY;
 
   constructor() {
+    this.resetConstructor();
+  }
+
+  resetConstructor() {
     this.pageWatch = 1;
     this.pageQueue = 1;
 
     this.#WATCH_KEY = 'films_to_watch';
     this.#QUEUE_KEY = 'films_to_queue';
 
-    const initArr = JSON.stringify([]);
+    this.signIn = true;
 
-    let filmsToWatch = JSON.parse(localStorage.getItem(this.#WATCH_KEY));
-    let filmsToQueue = JSON.parse(localStorage.getItem(this.#QUEUE_KEY));
+    let objToWatch = JSON.parse(localStorage.getItem(this.#WATCH_KEY));
+    let objToQueue = JSON.parse(localStorage.getItem(this.#QUEUE_KEY));
 
-    if (!filmsToWatch) {
-      localStorage.setItem(this.#WATCH_KEY, initArr);
-      filmsToWatch = [];
+    if (!objToWatch) objToWatch = {};
+    if (!objToQueue) objToQueue = {};
+
+    const account = JSON.parse(localStorage.getItem('account'));
+    if (!account) {
+      Notiflix.Notify.warning('➡ You have to sign in first');
+      console.log('➡ You have to sign in first');
+      this.signIn = false;
+      return;
     }
-    if (!filmsToQueue) {
-      localStorage.setItem(this.#QUEUE_KEY, initArr);
-      filmsToQueue = [];
-    }
 
-    this.maxWatch = Math.ceil(filmsToWatch.length / 20);
-    this.maxQueue = Math.ceil(filmsToQueue.length / 20);
+    this.email = account.email;
+
+    if (!Object.keys(objToWatch).length) {
+      const newObj = {};
+      newObj[this.email] = [];
+      localStorage.setItem(this.#WATCH_KEY, JSON.stringify(newObj));
+      localStorage.setItem(this.#QUEUE_KEY, JSON.stringify(newObj));
+      this.maxWatch = 0;
+      this.maxQueue = 0;
+    } else {
+      const isEmailInStorage = Object.keys(objToWatch).some(
+        locEmail => locEmail == this.email
+      );
+      if (!isEmailInStorage) {
+        const newObj = {};
+        newObj[this.email] = [];
+        localStorage.setItem(this.#WATCH_KEY, JSON.stringify(newObj));
+        localStorage.setItem(this.#QUEUE_KEY, JSON.stringify(newObj));
+      }
+
+      const filmsToWatchArr = objToWatch[this.email];
+      const filmsToQueuehArr = objToQueue[this.email];
+      this.maxWatch = Math.ceil(filmsToWatchArr.length / 20);
+      this.maxQueue = Math.ceil(filmsToQueuehArr.length / 20);
+    }
   }
 
   incrementPageWatch() {
@@ -56,62 +87,62 @@ class FilmsLocalStorage {
   }
 
   getTwentyFromWatch() {
-    const filmsJSON = localStorage.getItem(this.#WATCH_KEY);
-    const filmsArr = JSON.parse(filmsJSON);
+    const objToWatch = JSON.parse(localStorage.getItem(this.#WATCH_KEY));
+    const filmsArr = objToWatch[this.email];
     const from = 20 * (this.pageWatch - 1);
     const to = 20 * this.pageWatch - 1;
     return filmsArr.slice(from, to);
   }
 
   getTwentyFromQueue() {
-    const filmsJSON = localStorage.getItem(this.#QUEUE_KEY);
-    const filmsArr = JSON.parse(filmsJSON);
+    const objToQueue = JSON.parse(localStorage.getItem(this.#QUEUE_KEY));
+    const filmsArr = objToQueue[this.email];
     const from = 20 * (this.pageQueue - 1);
     const to = 20 * this.pageQueue - 1;
     return filmsArr.slice(from, to);
   }
 
   checkWatched(id) {
-    const filmsJSON = localStorage.getItem(this.#WATCH_KEY);
-    const filmsArr = JSON.parse(filmsJSON);
+    const objToWatch = JSON.parse(localStorage.getItem(this.#WATCH_KEY));
+    const filmsArr = objToWatch[this.email];
     return filmsArr.some(film => film.id == id);
   }
 
   checkQueue(id) {
-    const filmsJSON = localStorage.getItem(this.#QUEUE_KEY);
-    const filmsArr = JSON.parse(filmsJSON);
+    const objToQueue = JSON.parse(localStorage.getItem(this.#QUEUE_KEY));
+    const filmsArr = objToQueue[this.email];
     return filmsArr.some(film => film.id == id);
   }
 
   addFilmToWatch(film) {
-    const filmsJSON = localStorage.getItem(this.#WATCH_KEY);
-    const filmsArr = JSON.parse(filmsJSON);
-    filmsArr.unshift(film);
-    const newFilmsJSON = JSON.stringify(filmsArr);
+    const objToWatch = JSON.parse(localStorage.getItem(this.#WATCH_KEY));
+    objToWatch[this.email].unshift(film);
+    const newFilmsJSON = JSON.stringify(objToWatch);
     localStorage.setItem(this.#WATCH_KEY, newFilmsJSON);
   }
 
   addFilmToQueue(film) {
-    const filmsJSON = localStorage.getItem(this.#QUEUE_KEY);
-    const filmsArr = JSON.parse(filmsJSON);
-    filmsArr.unshift(film);
-    const newFilmsJSON = JSON.stringify(filmsArr);
+    const objToQueue = JSON.parse(localStorage.getItem(this.#QUEUE_KEY));
+    objToQueue[this.email].unshift(film);
+    const newFilmsJSON = JSON.stringify(objToQueue);
     localStorage.setItem(this.#QUEUE_KEY, newFilmsJSON);
   }
 
   delFilmFromWatch(id) {
-    const filmsJSON = localStorage.getItem(this.#WATCH_KEY);
-    let filmsArr = JSON.parse(filmsJSON);
-    filmsArr = filmsArr.filter(film => film.id != id);
-    const newFilmsJSON = JSON.stringify(filmsArr);
+    const objToWatch = JSON.parse(localStorage.getItem(this.#WATCH_KEY));
+    objToWatch[this.email] = objToWatch[this.email].filter(
+      film => film.id != id
+    );
+    const newFilmsJSON = JSON.stringify(objToWatch);
     localStorage.setItem(this.#WATCH_KEY, newFilmsJSON);
   }
 
   delFilmFromQueue(id) {
-    const filmsJSON = localStorage.getItem(this.#QUEUE_KEY);
-    let filmsArr = JSON.parse(filmsJSON);
-    filmsArr = filmsArr.filter(film => film.id != id);
-    const newFilmsJSON = JSON.stringify(filmsArr);
+    const objToQueue = JSON.parse(localStorage.getItem(this.#QUEUE_KEY));
+    objToQueue[this.email] = objToQueue[this.email].filter(
+      film => film.id != id
+    );
+    const newFilmsJSON = JSON.stringify(objToQueue);
     localStorage.setItem(this.#QUEUE_KEY, newFilmsJSON);
   }
 
@@ -123,12 +154,8 @@ class FilmsLocalStorage {
     this.pageQueue = value;
   }
 
-  resetPageWatch() {
-    this.pageWatch = 1;
-  }
-
-  resetPageQueue() {
-    this.pageWatch = 1;
+  setEmail(email) {
+    this.email = email;
   }
 
   getPageWatch() {

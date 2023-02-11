@@ -61,6 +61,7 @@ function onClick(evt) {
       return;
     } else {
       renderFilms(films, filmBoxRef);
+      console.log(storage.getPageQueue(), storage.getMaxQueue());
       const paginationArr = pagination(
         storage.getPageQueue(),
         storage.getMaxQueue()

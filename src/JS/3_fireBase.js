@@ -2,15 +2,17 @@
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
+import Notiflix from 'notiflix';
+import { storage } from './localStorage';
 
-import { initializeApp } from 'firebase/app';
+// import { initializeApp } from 'firebase/app';
 
-import {
-  getAuth,
-  signInWithPopup,
-  GoogleAuthProvider,
-  signOut,
-} from 'firebase/auth';
+// import {
+//   getAuth,
+//   signInWithPopup,
+//   GoogleAuthProvider,
+//   signOut,
+// } from 'firebase/auth';
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
@@ -24,12 +26,26 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-const login = document
-  .getElementById('signin')
-  .addEventListener('click', signinUser);
-const logout = document
-  .getElementById('signout')
-  .addEventListener('click', signoutUser);
+const account = JSON.parse(localStorage.getItem('account'));
+
+if (account) {
+  document.getElementById('signin').classList.add('close');
+  document.getElementById('signout').classList.remove('close');
+  document.getElementById('googleUser').style.display = 'block';
+  renderGoogleUser(account.photo);
+  document
+    .querySelector('.firebases')
+    .insertAdjacentHTML(
+      'beforebegin',
+      '<li><a class="nav__link nav__link--library" href="my-library.html">MY LIBRARY</a></li>'
+    );
+} else {
+  const login = document.getElementById('signin');
+  login.addEventListener('click', signinUser);
+}
+
+const logout = document.getElementById('signout');
+logout.addEventListener('click', signoutUser);
 
 // const provider = new GoogleAuthProvider();
 
@@ -42,9 +58,23 @@ function signinUser() {
       document.getElementById('signin').classList.add('close');
       document.getElementById('signout').classList.remove('close');
       document.getElementById('googleUser').style.display = 'block';
-      renderGoogleUser(data);
-      sessionStorage.setItem('email', data.user.email);
-      document.querySelector('.firebases').insertAdjacentHTML("beforebegin", '<li><a class="nav__link nav__link--library" href="my-library.html">MY LIBRARY</a></li>')
+      renderGoogleUser(data.user.photoURL);
+      document
+        .querySelector('.firebases')
+        .insertAdjacentHTML(
+          'beforebegin',
+          '<li><a class="nav__link nav__link--library" href="my-library.html">MY LIBRARY</a></li>'
+        );
+      console.log(data);
+
+      localStorage.setItem(
+        'account',
+        JSON.stringify({ email: data.user.email, photo: data.user.photoURL })
+      );
+
+      storage.resetConstructor();
+
+      firebase.auth().signOut();
     })
     .catch(function (error) {
       console.log(error);
@@ -52,23 +82,25 @@ function signinUser() {
 }
 
 function signoutUser() {
-  firebase
-    .auth()
-    .signOut()
-    .then(() => {
-      //console.log("Sign - out successful.");
-      document.getElementById('signin').classList.remove('close');
-      document.getElementById('signout').classList.add('close');
-      document.getElementById('googleUser').style.display = 'none';
-      document.querySelector('.nav__link--library').remove();
-    })
-    .catch(error => {
-      console.log(error);
-    });
+  const account = JSON.parse(localStorage.getItem('account'));
+  if (!account) {
+    Notiflix.Notify.warning('➡ You have to sign in first');
+    console.log('➡ You have to sign in first');
+  } else {
+    localStorage.removeItem('account');
+    document.getElementById('signin').classList.remove('close');
+    document.getElementById('signout').classList.add('close');
+    document.getElementById('googleUser').style.display = 'none';
+    document.querySelector('.nav__link--library').parentNode.remove();
+    storage.resetConstructor();
+  }
+
+  const login = document.getElementById('signin');
+  login.addEventListener('click', signinUser);
 }
 
-function renderGoogleUser(data) {
+function renderGoogleUser(photo) {
   document.getElementById('googleUser').innerHTML = `
-          <img class="user-img" src="${data.user.photoURL}">
+          <img class="user-img" src="${photo}">
         `;
 }
