@@ -160,7 +160,7 @@ class FilmsLocalStorage {
       const snapshot = await get(ref(this.#database, this.#QUEUE_KEY));
       const filmsArr = snapshot.val() || [];
 
-      filmsArr = filmsArr.unshift(film);
+      filmsArr.unshift(film);
       set(ref(this.#database, this.#QUEUE_KEY), filmsArr);
     } catch (err) {
       Notiflix.Notify.warning(
