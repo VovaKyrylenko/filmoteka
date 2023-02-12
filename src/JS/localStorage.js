@@ -1,61 +1,57 @@
 import Notiflix from 'notiflix';
+import { initializeApp } from 'firebase/app';
+import { getDatabase, get, set, ref } from 'firebase/database';
+import { firebaseConfig } from './helpers';
 
 class FilmsLocalStorage {
   #WATCH_KEY;
   #QUEUE_KEY;
 
-  constructor() {
-    this.resetConstructor();
-  }
+  #database;
 
-  resetConstructor() {
+  constructor() {}
+
+  async resetConstructor() {
     this.pageWatch = 1;
     this.pageQueue = 1;
 
-    this.#WATCH_KEY = 'films_to_watch';
-    this.#QUEUE_KEY = 'films_to_queue';
-
     this.signIn = true;
-
-    let objToWatch = JSON.parse(localStorage.getItem(this.#WATCH_KEY));
-    let objToQueue = JSON.parse(localStorage.getItem(this.#QUEUE_KEY));
-
-    if (!objToWatch) objToWatch = {};
-    if (!objToQueue) objToQueue = {};
 
     const account = JSON.parse(localStorage.getItem('account'));
     if (!account) {
       Notiflix.Notify.warning('➡ You have to sign in first');
       console.log('➡ You have to sign in first');
       this.signIn = false;
+      return Promise.reject('fail');
+    }
+
+    this.uid = account.id;
+
+    this.#WATCH_KEY = /users/ + 'watch' + this.uid;
+    this.#QUEUE_KEY = /users/ + 'queue' + this.uid;
+
+    const app = initializeApp(firebaseConfig);
+    this.#database = getDatabase(app);
+
+    try {
+      const snapshotWatch = await get(ref(this.#database, this.#WATCH_KEY));
+      const snapshotQueue = await get(ref(this.#database, this.#QUEUE_KEY));
+
+      const filmsArrWatch = snapshotWatch.val() || [];
+      const filmsArrQueue = snapshotQueue.val() || [];
+
+      this.maxWatch = Math.ceil(filmsArrWatch.length / 20);
+      this.maxQueue = Math.ceil(filmsArrQueue.length / 20);
+    } catch (err) {
+      this.signIn = false;
+      Notiflix.Notify.warning(
+        '👾 There is problem with Internet, try again later'
+      );
+      console.log(err.message);
       return;
     }
 
-    this.email = account.email;
-
-    if (!Object.keys(objToWatch).length) {
-      const newObj = {};
-      newObj[this.email] = [];
-      localStorage.setItem(this.#WATCH_KEY, JSON.stringify(newObj));
-      localStorage.setItem(this.#QUEUE_KEY, JSON.stringify(newObj));
-      this.maxWatch = 0;
-      this.maxQueue = 0;
-    } else {
-      const isEmailInStorage = Object.keys(objToWatch).some(
-        locEmail => locEmail == this.email
-      );
-      if (!isEmailInStorage) {
-        const newObj = {};
-        newObj[this.email] = [];
-        localStorage.setItem(this.#WATCH_KEY, JSON.stringify(newObj));
-        localStorage.setItem(this.#QUEUE_KEY, JSON.stringify(newObj));
-      }
-
-      const filmsToWatchArr = objToWatch[this.email];
-      const filmsToQueuehArr = objToQueue[this.email];
-      this.maxWatch = Math.ceil(filmsToWatchArr.length / 20);
-      this.maxQueue = Math.ceil(filmsToQueuehArr.length / 20);
-    }
+    return Promise.resolve('sucess');
   }
 
   incrementPageWatch() {
@@ -86,64 +82,122 @@ class FilmsLocalStorage {
     this.pageQueue -= 1;
   }
 
-  getTwentyFromWatch() {
-    const objToWatch = JSON.parse(localStorage.getItem(this.#WATCH_KEY));
-    const filmsArr = objToWatch[this.email];
-    const from = 20 * (this.pageWatch - 1);
-    const to = 20 * this.pageWatch - 1;
-    return filmsArr.slice(from, to);
+  async getTwentyFromWatch() {
+    try {
+      const snapshot = await get(ref(this.#database, this.#WATCH_KEY));
+      const filmsArr = snapshot.val() || [];
+      const from = 20 * (this.pageWatch - 1);
+      const to = 20 * this.pageWatch - 1;
+      return filmsArr.slice(from, to);
+    } catch (err) {
+      Notiflix.Notify.warning(
+        '👾 There is problem with Internet, try again later'
+      );
+      console.log(err);
+    }
   }
 
-  getTwentyFromQueue() {
-    const objToQueue = JSON.parse(localStorage.getItem(this.#QUEUE_KEY));
-    const filmsArr = objToQueue[this.email];
-    const from = 20 * (this.pageQueue - 1);
-    const to = 20 * this.pageQueue - 1;
-    return filmsArr.slice(from, to);
+  async getTwentyFromQueue() {
+    try {
+      const snapshot = await get(ref(this.#database, this.#QUEUE_KEY));
+      const filmsArr = snapshot.val() || [];
+      const from = 20 * (this.pageQueue - 1);
+      const to = 20 * this.pageQueue - 1;
+      return filmsArr.slice(from, to);
+    } catch (err) {
+      Notiflix.Notify.warning(
+        '👾 There is problem with Internet, try again later'
+      );
+      console.log(err);
+    }
   }
 
-  checkWatched(id) {
-    const objToWatch = JSON.parse(localStorage.getItem(this.#WATCH_KEY));
-    const filmsArr = objToWatch[this.email];
-    return filmsArr.some(film => film.id == id);
+  async checkWatched(id) {
+    try {
+      const snapshot = await get(ref(this.#database, this.#WATCH_KEY));
+      const filmsArr = snapshot.val() || [];
+
+      return filmsArr.some(film => film.id == id);
+    } catch (err) {
+      Notiflix.Notify.warning(
+        '👾 There is problem with Internet, try again later'
+      );
+      console.log(err);
+    }
   }
 
-  checkQueue(id) {
-    const objToQueue = JSON.parse(localStorage.getItem(this.#QUEUE_KEY));
-    const filmsArr = objToQueue[this.email];
-    return filmsArr.some(film => film.id == id);
+  async checkQueue(id) {
+    try {
+      const snapshot = await get(ref(this.#database, this.#QUEUE_KEY));
+      const filmsArr = snapshot.val() || [];
+
+      return filmsArr.some(film => film.id == id);
+    } catch (err) {
+      Notiflix.Notify.warning(
+        '👾 There is problem with Internet, try again later'
+      );
+      console.log(err);
+    }
   }
 
-  addFilmToWatch(film) {
-    const objToWatch = JSON.parse(localStorage.getItem(this.#WATCH_KEY));
-    objToWatch[this.email].unshift(film);
-    const newFilmsJSON = JSON.stringify(objToWatch);
-    localStorage.setItem(this.#WATCH_KEY, newFilmsJSON);
+  async addFilmToWatch(film) {
+    try {
+      const snapshot = await get(ref(this.#database, this.#WATCH_KEY));
+      const filmsArr = snapshot.val() || [];
+
+      filmsArr.unshift(film);
+      set(ref(this.#database, this.#WATCH_KEY), filmsArr);
+    } catch (err) {
+      Notiflix.Notify.warning(
+        '👾 There is problem with Internet, try again later'
+      );
+      console.log(err);
+    }
   }
 
-  addFilmToQueue(film) {
-    const objToQueue = JSON.parse(localStorage.getItem(this.#QUEUE_KEY));
-    objToQueue[this.email].unshift(film);
-    const newFilmsJSON = JSON.stringify(objToQueue);
-    localStorage.setItem(this.#QUEUE_KEY, newFilmsJSON);
+  async addFilmToQueue(film) {
+    try {
+      const snapshot = await get(ref(this.#database, this.#QUEUE_KEY));
+      const filmsArr = snapshot.val() || [];
+
+      filmsArr = filmsArr.unshift(film);
+      set(ref(this.#database, this.#QUEUE_KEY), filmsArr);
+    } catch (err) {
+      Notiflix.Notify.warning(
+        '👾 There is problem with Internet, try again later'
+      );
+      console.log(err);
+    }
   }
 
-  delFilmFromWatch(id) {
-    const objToWatch = JSON.parse(localStorage.getItem(this.#WATCH_KEY));
-    objToWatch[this.email] = objToWatch[this.email].filter(
-      film => film.id != id
-    );
-    const newFilmsJSON = JSON.stringify(objToWatch);
-    localStorage.setItem(this.#WATCH_KEY, newFilmsJSON);
+  async delFilmFromWatch(id) {
+    try {
+      const snapshot = await get(ref(this.#database, this.#WATCH_KEY));
+      let filmsArr = snapshot.val() || [];
+
+      filmsArr = filmsArr.filter(film => film.id != id);
+      set(ref(this.#database, this.#WATCH_KEY), filmsArr);
+    } catch (err) {
+      Notiflix.Notify.warning(
+        '👾 There is problem with Internet, try again later'
+      );
+      console.log(err);
+    }
   }
 
-  delFilmFromQueue(id) {
-    const objToQueue = JSON.parse(localStorage.getItem(this.#QUEUE_KEY));
-    objToQueue[this.email] = objToQueue[this.email].filter(
-      film => film.id != id
-    );
-    const newFilmsJSON = JSON.stringify(objToQueue);
-    localStorage.setItem(this.#QUEUE_KEY, newFilmsJSON);
+  async delFilmFromQueue(id) {
+    try {
+      const snapshot = await get(ref(this.#database, this.#QUEUE_KEY));
+      let filmsArr = snapshot.val() || [];
+
+      filmsArr = filmsArr.filter(film => film.id != id);
+      set(ref(this.#database, this.#QUEUE_KEY), filmsArr);
+    } catch (err) {
+      Notiflix.Notify.warning(
+        '👾 There is problem with Internet, try again later'
+      );
+      console.log(err);
+    }
   }
 
   setPageWatch(value) {
@@ -152,10 +206,6 @@ class FilmsLocalStorage {
 
   setPageQueue(value) {
     this.pageQueue = value;
-  }
-
-  setEmail(email) {
-    this.email = email;
   }
 
   getPageWatch() {
@@ -175,4 +225,11 @@ class FilmsLocalStorage {
   }
 }
 
-export const storage = new FilmsLocalStorage();
+let storage;
+
+export default (async () => {
+  storage = new FilmsLocalStorage();
+  await storage.resetConstructor();
+})();
+
+export { storage };

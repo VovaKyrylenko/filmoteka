@@ -269,18 +269,24 @@ function listClickHandlerWatch(event) {
 
   if (trimedValue === pageValue) {
     if (Number(pageValue) < storage.getMaxWatch() + 1) {
-      storage.setPageWatch(Number(pageValue));
-      const films = storage.getTwentyFromWatch();
-      renderFilms(films, filmBoxRef);
+      (async () => {
+        storage.setPageWatch(Number(pageValue));
+        const films = await storage.getTwentyFromWatch();
+        renderFilms(films, filmBoxRef);
+      })();
     }
   } else if (element.classList[0] === 'pagination__right-arrow') {
-    storage.incrementPageWatch();
-    const films = storage.getTwentyFromWatch();
-    renderFilms(films, filmBoxRef);
+    (async () => {
+      storage.incrementPageWatch();
+      const films = await storage.getTwentyFromWatch();
+      renderFilms(films, filmBoxRef);
+    })();
   } else {
-    storage.decrementPageWatch();
-    const films = storage.getTwentyFromWatch();
-    renderFilms(films, filmBoxRef);
+    (async () => {
+      storage.decrementPageWatch();
+      const films = await storage.getTwentyFromWatch();
+      renderFilms(films, filmBoxRef);
+    })();
   }
 
   const paginationArr = pagination(
@@ -304,18 +310,24 @@ function listClickHandlerQueue(event) {
 
   if (trimedValue === pageValue) {
     if (Number(pageValue) < storage.getMaxQueue() + 1) {
-      storage.setPageQueue(Number(pageValue));
-      const films = storage.getTwentyFromQueue();
-      renderFilms(films, filmBoxRef);
+      (async () => {
+        storage.setPageQueue(Number(pageValue));
+        const films = await storage.getTwentyFromQueue();
+        renderFilms(films, filmBoxRef);
+      })();
     }
   } else if (element.classList[0] === 'pagination__right-arrow') {
-    storage.incrementPageQueue();
-    const films = storage.getTwentyFromQueue();
-    renderFilms(films, filmBoxRef);
+    (async () => {
+      storage.incrementPageQueue();
+      const films = await storage.getTwentyFromQueue();
+      renderFilms(films, filmBoxRef);
+    })();
   } else {
-    storage.decrementPageQueue();
-    const films = storage.getTwentyFromQueue();
-    renderFilms(films, filmBoxRef);
+    (async () => {
+      storage.decrementPageQueue();
+      const films = await storage.getTwentyFromQueue();
+      renderFilms(films, filmBoxRef);
+    })();
   }
 
   const paginationArr = pagination(

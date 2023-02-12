@@ -89,15 +89,19 @@ function checkAndDisableButtons(filmId, movie) {
     btnQueue.setAttribute('js-disabled', '');
   };
 
-  if (storage.checkWatched(filmId)) {
-    btnWatched.textContent = 'Moved to Watched';
-    btnWatched.setAttribute('js-disabled', '');
-  }
+  (async () => {
+    if (await storage.checkWatched(filmId)) {
+      btnWatched.textContent = 'Moved to Watched';
+      btnWatched.setAttribute('js-disabled', '');
+    }
+  })();
 
-  if (storage.checkQueue(filmId)) {
-    btnQueue.textContent = 'Moved to Queue';
-    btnQueue.setAttribute('js-disabled', '');
-  }
+  (async () => {
+    if (await storage.checkQueue(filmId)) {
+      btnQueue.textContent = 'Moved to Queue';
+      btnQueue.setAttribute('js-disabled', '');
+    }
+  })();
 
   btnWatched.addEventListener('click', setWatchedClick);
   btnQueue.addEventListener('click', setQueueClick);
