@@ -1,7 +1,10 @@
 import * as basicLightbox from 'basiclightbox';
 import { API } from './JS/service';
 import { filmBoxRef, listButton } from './JS/helpers';
-import { storage } from './JS/localStorage';
+import promice, { storage } from './JS/localStorage';
+if (!storage.signIn) {
+  window.location.replace('./index.html');
+}
 import {
   renderFilms,
   pagination,
@@ -12,7 +15,6 @@ import Notiflix from 'notiflix';
 import 'basiclightbox/dist/basicLightbox.min.css';
 
 listButton.addEventListener('click', onClick);
-
 const queueBtn = document.querySelector('.js-queue');
 queueBtn.click();
 
@@ -29,48 +31,54 @@ function onClick(evt) {
   };
 
   if (evt.target.classList.contains('js-watched')) {
-    spiner.start();
-    initFunc();
-    const films = storage.getTwentyFromWatch();
-    if (films.length === 0) {
-      filmBoxRef.innerHTML =
-        '<div style="width: 100%;"><img src="https://myron5.github.io/goit-js-hw-07/img-watch.jpg" style="width: 100%; object-fit: cover;"></div>';
-      Notiflix.Notify.warning("🙈 You haven't watched films");
-      spiner.stop();
-      return;
-    } else {
-      renderFilms(films, filmBoxRef);
-      const paginationArr = pagination(
-        storage.getPageWatch(),
-        storage.getMaxWatch()
-      );
-      filmBoxRef.setAttribute('data-id', 'watch-gallery');
-      renderPagination(paginationArr, filmBoxRef);
-      filmBoxRef.addEventListener('click', onContainerClickWatch);
-      spiner.stop();
-    }
+    (async () => {
+      spiner.start();
+      initFunc();
+      const films = await storage.getTwentyFromWatch();
+      if (films.length === 0) {
+        filmBoxRef.innerHTML =
+          '<div style="width: 100%;"><img src="https://myron5.github.io/goit-js-hw-07/img-watch.jpg" style="width: 100%; object-fit: cover;"></div>';
+        Notiflix.Notify.warning("🙈 You haven't watched films");
+        spiner.stop();
+        return;
+      } else {
+        renderFilms(films, filmBoxRef);
+        const paginationArr = pagination(
+          storage.getPageWatch(),
+          storage.getMaxWatch()
+        );
+        filmBoxRef.setAttribute('data-id', 'watch-gallery');
+        renderPagination(paginationArr, filmBoxRef);
+        filmBoxRef.addEventListener('click', onContainerClickWatch);
+        spiner.stop();
+      }
+    })();
   } else if (evt.target.classList.contains('js-queue')) {
-    spiner.start();
-    initFunc();
-    const films = storage.getTwentyFromQueue();
-    if (films.length === 0) {
-      filmBoxRef.innerHTML =
-        '<div style="width: 100%;"><img src="https://myron5.github.io/goit-js-hw-07/img-queue.jpg" style="width: 100%; object-fit: cover;"></div>';
-      Notiflix.Notify.warning("🗃 You haven't queued films");
-      spiner.stop();
-      return;
-    } else {
-      renderFilms(films, filmBoxRef);
-      console.log(storage.getPageQueue(), storage.getMaxQueue());
-      const paginationArr = pagination(
-        storage.getPageQueue(),
-        storage.getMaxQueue()
-      );
-      filmBoxRef.setAttribute('data-id', 'queue-gallery');
-      renderPagination(paginationArr, filmBoxRef);
-      filmBoxRef.addEventListener('click', onContainerClickQueue);
-      spiner.stop();
-    }
+    (async () => {
+      spiner.start();
+      initFunc();
+      const films = await storage.getTwentyFromQueue();
+      if (films.length === 0) {
+        filmBoxRef.innerHTML =
+          '<div style="width: 100%;"><img src="https://myron5.github.io/goit-js-hw-07/img-queue.jpg" style="width: 100%; object-fit: cover;"></div>';
+        Notiflix.Notify.warning("🗃 You haven't queued films");
+        spiner.stop();
+        return;
+      } else {
+        renderFilms(films, filmBoxRef);
+        promice.then(() => {
+          const paginationArr = pagination(
+            storage.getPageQueue(),
+            storage.getMaxQueue()
+          );
+          filmBoxRef.setAttribute('data-id', 'queue-gallery');
+          renderPagination(paginationArr, filmBoxRef);
+          filmBoxRef.addEventListener('click', onContainerClickQueue);
+        });
+
+        spiner.stop();
+      }
+    })();
   } else return;
 }
 
@@ -231,6 +239,7 @@ function checkAndDisableButtons(filmId, movie, section) {
       );
       return;
     }
+
     storage.addFilmToWatch(movie);
     btnWatched.textContent = 'Moved to Watched';
     btnWatched.setAttribute('js-disabled', '');
@@ -250,17 +259,21 @@ function checkAndDisableButtons(filmId, movie, section) {
   };
 
   if (section == 'watch') {
-    if (storage.checkQueue(filmId)) {
-      btnQueue.textContent = 'Moved to Queue';
-      btnQueue.setAttribute('js-disabled', '');
-    }
-    btnQueue.addEventListener('click', setQueueClick);
+    (async () => {
+      if (await storage.checkQueue(filmId)) {
+        btnQueue.textContent = 'Moved to Queue';
+        btnQueue.setAttribute('js-disabled', '');
+      }
+      btnQueue.addEventListener('click', setQueueClick);
+    })();
   } else if (section == 'queue') {
-    if (storage.checkWatched(filmId)) {
-      btnWatched.textContent = 'Moved to Watched';
-      btnWatched.setAttribute('js-disabled', '');
-    }
-    btnWatched.addEventListener('click', setWatchedClick);
+    (async () => {
+      if (await storage.checkWatched(filmId)) {
+        btnWatched.textContent = 'Moved to Watched';
+        btnWatched.setAttribute('js-disabled', '');
+      }
+      btnWatched.addEventListener('click', setWatchedClick);
+    })();
   }
 }
 
@@ -306,43 +319,47 @@ function onDeleteFilm(filmId, modal, section) {
   const btnQueue = document.querySelector('.movie__to-queue');
 
   const deleteWatchedClick = e => {
-    e.preventDefault();
-    storage.delFilmFromWatch(filmId);
-    const filmsToWatch = storage.getTwentyFromWatch();
-    renderFilms(filmsToWatch, filmBoxRef);
-    const paginationArr = pagination(
-      storage.getPageWatch(),
-      storage.getMaxWatch()
-    );
-    renderPagination(paginationArr, filmBoxRef);
-    modal.close();
-    if (filmsToWatch.length === 0) {
-      const paginationUlRef = document.querySelector('.pagination');
-      paginationUlRef.innerHTML = '';
-      filmBoxRef.innerHTML =
-        '<div style="width: 100%;"><img src="https://myron5.github.io/goit-js-hw-07/img-watch.jpg" style="width: 100%; object-fit: cover;"></div>';
-      Notiflix.Notify.warning("🙈 You haven't watched films");
-    }
+    (async () => {
+      e.preventDefault();
+      await storage.delFilmFromWatch(filmId);
+      const filmsToWatch = await storage.getTwentyFromWatch();
+      renderFilms(filmsToWatch, filmBoxRef);
+      const paginationArr = pagination(
+        storage.getPageWatch(),
+        storage.getMaxWatch()
+      );
+      renderPagination(paginationArr, filmBoxRef);
+      modal.close();
+      if (filmsToWatch.length === 0) {
+        const paginationUlRef = document.querySelector('.pagination');
+        paginationUlRef.innerHTML = '';
+        filmBoxRef.innerHTML =
+          '<div style="width: 100%;"><img src="https://myron5.github.io/goit-js-hw-07/img-watch.jpg" style="width: 100%; object-fit: cover;"></div>';
+        Notiflix.Notify.warning("🙈 You haven't watched films");
+      }
+    })();
   };
 
   const deleteQueueClick = e => {
-    e.preventDefault();
-    storage.delFilmFromQueue(filmId);
-    const filmsToQueue = storage.getTwentyFromQueue();
-    renderFilms(filmsToQueue, filmBoxRef);
-    const paginationArr = pagination(
-      storage.getPageQueue(),
-      storage.getMaxQueue()
-    );
-    renderPagination(paginationArr, filmBoxRef);
-    modal.close();
-    if (filmsToQueue.length === 0) {
-      const paginationUlRef = document.querySelector('.pagination');
-      paginationUlRef.innerHTML = '';
-      filmBoxRef.innerHTML =
-        '<div style="width: 100%;"><img src="https://myron5.github.io/goit-js-hw-07/img-queue.jpg" style="width: 100%; object-fit: cover;"></div>';
-      Notiflix.Notify.warning("🗃 You haven't queued films");
-    }
+    (async () => {
+      e.preventDefault();
+      await storage.delFilmFromQueue(filmId);
+      const filmsToQueue = await storage.getTwentyFromQueue();
+      renderFilms(filmsToQueue, filmBoxRef);
+      const paginationArr = pagination(
+        storage.getPageQueue(),
+        storage.getMaxQueue()
+      );
+      renderPagination(paginationArr, filmBoxRef);
+      modal.close();
+      if (filmsToQueue.length === 0) {
+        const paginationUlRef = document.querySelector('.pagination');
+        paginationUlRef.innerHTML = '';
+        filmBoxRef.innerHTML =
+          '<div style="width: 100%;"><img src="https://myron5.github.io/goit-js-hw-07/img-queue.jpg" style="width: 100%; object-fit: cover;"></div>';
+        Notiflix.Notify.warning("🗃 You haven't queued films");
+      }
+    })();
   };
 
   if (section == 'watch')
